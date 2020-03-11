@@ -1,5 +1,5 @@
 # gene-expression-models
-This repository provides a collection of functions implementing analytic and approximate solutions for the steady state distribution of stochastic gene expression models. The repository consists of four key modules in the `source` directory: `analytic.py`, `extrinsic.py`, `FSP.py` and `recurrence.py`. Example scripts are also provided.
+This repository provides functions implementing analytic and approximate methods developed in [1] to compute steady-state solutions of stochastic gene expression models. The repository consists of four key modules in the `source` directory: `analytic.py`, `extrinsic.py`, `FSP.py` and `recurrence.py`. Example scripts are also provided.
 
 ## Installation
 
@@ -14,6 +14,13 @@ The installation can then be tested by running one of the example scripts:
 ```bash
 python examples/PlotRecurrence.py
 ```
+
+## Examples
+The folder `examples/` contains the following example scripts which can be run using the python interpreter:
+- `PlotAnalytic.py`: computes and plots the analytic solution of several models.
+- `PlotRecurrence.py`: approximate steady-state solutions using the recurrence method and compare finite finite-state projection algorithm.
+- `PlotExtrinsic.py`: solutions for gene models with extrinsic noise on parameters using the analytic solution method and the recurrence method from [1].
+
 
 ## Common usage
 Typical usage would be to generate the steady state probability distribution for a given gene expression model. In this case the distribution *p*(*n*) is evaluated for all copy numbers *n*=0:*N*-1, and returned as a list of length *N*. For example:
@@ -44,4 +51,4 @@ for s in samps: # Evaluate the log-likelihood
 ## Related literature
 The analytic solutions and recurrence method implemented here are described in the paper:
 
-L. Ham, D. Schnoerr, R. D. Brackston & M. P. H. Stumpf, Exactly solvable models of stochastic gene expression. *bioRxiv* [2020.01.05.895359](https://doi.org/10.1101/2020.01.05.895359).
+[1] L. Ham, D. Schnoerr, R. D. Brackston & M. P. H. Stumpf, Exactly solvable models of stochastic gene expression. *bioRxiv* [2020.01.05.895359](https://doi.org/10.1101/2020.01.05.895359).
