@@ -31,7 +31,7 @@ plt.ylabel(r'Probability distribution, $p(n)$')
 plt.legend()
 plt.savefig("Compound_Telegraph.pdf", format='pdf')
 
-# Three state model with extrinsic noise on K3
+# Three state model with extrinsic noise on K3 as features in Figure 9 (b)
 prms = [0.1,0.2,0.1,0.2,0.1,0.1,5.,20.,40.]
 kstd = 10.
 N = 100
@@ -58,7 +58,7 @@ axin.set_xlabel(r'$n$')
 axin.set_ylabel(r'$p(n)$')
 plt.savefig("Compound_ThreeState.pdf", format='pdf')
 
-# 2^2 state model with extrinsic noise
+# 2^2 state model with extrinsic noise as features in Figure 9 (a)
 prms = [0.01,0.01,0.01,0.01, 5,16,28]
 kstd = 10.
 N = 100

@@ -88,9 +88,6 @@ def fracrise_mpm_memo(lamda, mu, r):
 def fracrise_memo(lamda, mu, r):
     return fracrise(lamda, lamda+mu, r)
 
-# Not memoized since most function calls have different arguments
-def multinomial_mpm_memo(rc, r0, r1, r2):
-    return multinomial_mpm((rc,r0,r1,r2))
 
 def analytic_twostate(parameters, N):
     """ Analytic steady state distribution for a two-state model (leaky telegraph).
@@ -213,7 +210,7 @@ def twothree_n(parameters, n):
 
     p = mpm.mpf(0)
     for rc,r0,r1,r2 in r_combinations:
-        p += multinomial_mpm_memo(rc,r0,r1,r2) * power_mpm_memo(KB,rc) * exp_mpm_memo(-KB) * \
+        p += multinomial_mpm(r_combinations) * power_mpm_memo(KB,rc) * exp_mpm_memo(-KB) * \
             power_mpm_memo(k0,r0)*fracrise_mpm_memo(lamda0, mu0, r0) * hyp_mpm_memo(lamda0, mu0, k0, r0) * \
             power_mpm_memo(k1,r1)*fracrise_mpm_memo(lamda1, mu1, r1) * hyp_mpm_memo(lamda1, mu1, k1, r1) * \
             power_mpm_memo(k2,r2)*fracrise_mpm_memo(lamda2, mu2, r2) * hyp_mpm_memo(lamda2, mu2, k2, r2)
