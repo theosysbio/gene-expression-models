@@ -1,5 +1,6 @@
 # gene-expression-models
 [![DOI](https://zenodo.org/badge/244686352.svg)](https://zenodo.org/badge/latestdoi/244686352)
+
 This repository provides functions implementing analytic and approximate methods developed in [1] to compute steady-state solutions of stochastic gene expression models. The repository consists of four key modules in the `source` directory: `analytic.py`, `extrinsic.py`, `FSP.py` and `recurrence.py`. Example scripts are also provided.
 
 ## Installation
