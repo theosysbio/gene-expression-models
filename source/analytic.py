@@ -156,7 +156,7 @@ def analytic_telegraph(parameters, N):
             P[n] = (
                 sp.hyp1f1(a + n, b + n, -c)
                 * (c * np.exp(1) / n) ** n
-                / np.sqrt(2 * n * pi)
+                / np.sqrt(2 * n * math.pi)
             )
         P[n] *= fracrise(a, b, n - 1)
 
