@@ -1,17 +1,19 @@
-# Compare evaluation of compound distributions
-import scipy.stats as st
-import matplotlib.pyplot as plt
+"""
+Compare evaluation of compound distributions
+"""
 
-plt.style.use("seaborn-whitegrid")
 import sys
 import os
+
+import matplotlib.pyplot as plt
+plt.style.use("seaborn-whitegrid")
+import scipy.stats as st
+
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../source"))
 )
-
 # Load our modules
-import FSP as fsp
 import analytic as an
 import recurrence as rec
 import extrinsic as ext
