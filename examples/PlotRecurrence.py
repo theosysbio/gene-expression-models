@@ -1,4 +1,7 @@
-# Plot examples of the recurrence method solutions
+"""
+Plot examples of the recurrence method solutions
+"""
+
 import matplotlib.pyplot as plt
 
 plt.style.use("seaborn-whitegrid")

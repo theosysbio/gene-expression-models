@@ -1,4 +1,6 @@
-# Functions for implementing the analytic solutions where known
+"""
+Functions for implementing the analytic solutions where known
+"""
 
 import numpy as np
 import scipy.special as sp

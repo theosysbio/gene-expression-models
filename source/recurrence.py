@@ -1,4 +1,6 @@
-# Functions for evaluating the recurrence relations
+"""
+Functions for evaluating the recurrence relations
+"""
 
 import math
 import numpy as np

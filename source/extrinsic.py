@@ -1,4 +1,6 @@
-# General utility functions used elsewhere
+"""
+General utility functions used elsewhere
+"""
 
 import scipy.stats as st
 import numpy as np

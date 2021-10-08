@@ -1,3 +1,7 @@
+"""
+implement finite state projection algorithm
+"""
+
 from scipy.linalg import null_space
 import scipy.sparse as sps
 import numpy as np

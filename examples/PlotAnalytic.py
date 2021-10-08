@@ -1,4 +1,7 @@
-# Plot analytic solutions
+"""
+Plot analytic solutions
+"""
+
 import matplotlib.pyplot as plt
 plt.style.use("seaborn-whitegrid")
 
