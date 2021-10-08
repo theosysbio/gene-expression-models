@@ -215,16 +215,6 @@ def twotwo_n(parameters, n):
     return p / math.factorial(n)
 
 
-def analytic_twothree(parameters, N):
-    """Analytic solution to the 2^3 multistate model.
-
-    Arguments:
-    parameters -- List of the seven rate parameters: lamda0,mu0,lamda1,mu1, KB,k0,k1
-    N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1"""
-
-    return [twothree_n(parameters, n) for n in range(N)]
-
-
 def twothree_n(parameters, n):
     """Analytic solution to the 2^3 multistate model for a single copy number n.
 
