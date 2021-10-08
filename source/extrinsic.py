@@ -7,8 +7,16 @@ from recurrence import invgenfunc
 from decimal import Decimal, getcontext
 
 
-def solve_compound(solFunc, parameters, hyperparameter, N, parIdx=3,
-    distribution='normal', recurrence=False, precision=50):
+def solve_compound(
+    solFunc,
+    parameters,
+    hyperparameter,
+    N,
+    parIdx=3,
+    distribution="normal",
+    recurrence=False,
+    precision=50,
+):
     """Obtain a compound distribution for the model in solfunc.
 
     Arguments:
@@ -29,31 +37,31 @@ def solve_compound(solFunc, parameters, hyperparameter, N, parIdx=3,
     nTheta = 200
 
     # Set up the parameter distribution
-    m,s = parameters[parIdx],hyperparameter
-    if distribution == 'normal':
-        a,b = (0 - m)/s, 10000
-        dist = st.truncnorm(a,b,m,s)
-    elif distribution == 'gamma':
-        theta = s**2/m
-        k = (m/s)**2
-        dist = st.gamma(k,scale=theta)
-    elif distribution =='lognormal':
-        mu = np.log(m/np.sqrt(1+(s/m)**2))
-        sg = np.sqrt(np.log(1+(s/m)**2))
-        dist = st.lognorm(s=sg,scale=np.exp(mu))
+    m, s = parameters[parIdx], hyperparameter
+    if distribution == "normal":
+        a, b = (0 - m) / s, 10000
+        dist = st.truncnorm(a, b, m, s)
+    elif distribution == "gamma":
+        theta = s ** 2 / m
+        k = (m / s) ** 2
+        dist = st.gamma(k, scale=theta)
+    elif distribution == "lognormal":
+        mu = np.log(m / np.sqrt(1 + (s / m) ** 2))
+        sg = np.sqrt(np.log(1 + (s / m) ** 2))
+        dist = st.lognorm(s=sg, scale=np.exp(mu))
     else:
-        print('Invalid distribution selected')
+        print("Invalid distribution selected")
         return
 
     # Set up parameter vector
     thetMax = dist.ppf(cdfMax)
-    thetMin = dist.ppf(1-cdfMax)
+    thetMin = dist.ppf(1 - cdfMax)
     thetVec = np.linspace(thetMin, thetMax, nTheta)
-    dThet = thetVec[1]-thetVec[0]
+    dThet = thetVec[1] - thetVec[0]
     P = np.zeros(N)
     parMod = deepcopy(parameters)
 
-    # If operating on the recurrence terms, need to comnvert to Decimal
+    # If operating on the recurrence terms, need to comnvert to Decimal
     if recurrence:
         P = np.array([Decimal(p) for p in P])
         dThet = Decimal(dThet)
@@ -62,16 +70,26 @@ def solve_compound(solFunc, parameters, hyperparameter, N, parIdx=3,
     for thet in thetVec:
         parMod[parIdx] = thet
         if recurrence:
-            P += np.array(solFunc(parMod,N,precision=precision)) * Decimal(dist.pdf(thet))
+            P += np.array(solFunc(parMod, N, precision=precision)) * Decimal(
+                dist.pdf(thet)
+            )
         else:
-            P += solFunc(parMod,N) * dist.pdf(thet)
+            P += solFunc(parMod, N) * dist.pdf(thet)
 
     P *= dThet
     return P
 
 
-def solve_compound_rec(recFunc, parameters, hyperparameter, N, M, parIdx=3,
-    distribution='normal', precision=100):
+def solve_compound_rec(
+    recFunc,
+    parameters,
+    hyperparameter,
+    N,
+    M,
+    parIdx=3,
+    distribution="normal",
+    precision=100,
+):
     """Obtain the coefficients h_i of the recurrence method for a compound
     distribution.
 
@@ -91,6 +109,14 @@ def solve_compound_rec(recFunc, parameters, hyperparameter, N, M, parIdx=3,
     precision -- Integer specifying the precision used by the Decimal class
     """
 
-    H = solve_compound(recFunc, parameters, hyperparameter, M, parIdx, \
-        distribution, recurrence=True, precision=precision)
+    H = solve_compound(
+        recFunc,
+        parameters,
+        hyperparameter,
+        M,
+        parIdx,
+        distribution,
+        recurrence=True,
+        precision=precision,
+    )
     return [invgenfunc(H, n, precision=precision) for n in range(0, N)]
