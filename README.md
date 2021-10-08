@@ -14,14 +14,14 @@ conda install --file requirements.txt
 
 The installation can then be tested by running one of the example scripts:
 ```bash
-python examples/PlotRecurrence.py
+python examples/plot_recurrence_solutions.py
 ```
 
 ## Examples
 The folder `examples/` contains the following example scripts which can be run using the python interpreter:
-- `PlotAnalytic.py`: computes and plots the analytic solution of several models.
-- `PlotRecurrence.py`: approximate steady-state solutions using the recurrence method and compare finite finite-state projection algorithm.
-- `PlotExtrinsic.py`: solutions for gene models with extrinsic noise on parameters using the analytic solution method and the recurrence method from [1].
+- `plot_analytic_solutions.py`: computes and plots the analytic solution of several models.
+- `plot_recurrence_solutions.py`: approximate steady-state solutions using the recurrence method and compare finite finite-state projection algorithm.
+- `plot_extrinsic_solutions.py`: solutions for gene models with extrinsic noise on parameters using the analytic solution method and the recurrence method from [1].
 
 
 ## Common usage
