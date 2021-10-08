@@ -13,7 +13,7 @@ sys.path.insert(
 )
 
 # Load our modules
-import FSP as fsp
+import fsp
 import analytic as an
 import recurrence as rec
 
@@ -45,7 +45,7 @@ prms = [
 ]  # [v12, v13, v21, v23, v31, v32, k1, k2 ,k3]
 print("Calculating three-state")
 p_recurrence = rec.recurrence_three_switch(prms, 100, 305, 60)
-p_fsp = fsp.FSP_threestate(prms, 100)
+p_fsp = fsp.fsp_threestate(prms, 100)
 plt.clf()
 fig.suptitle("Three-Switch Model")
 plt.plot(p_fsp, label="FSP")
