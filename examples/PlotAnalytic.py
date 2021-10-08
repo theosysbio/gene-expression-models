@@ -1,15 +1,13 @@
 # Plot analytic solutions
 import matplotlib.pyplot as plt
-
 plt.style.use("seaborn-whitegrid")
+
 import sys
 import os
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../source"))
 )
-
-# Load our module
 import analytic as an
 
 # Plot the leaky Telegraph model
