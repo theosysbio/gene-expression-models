@@ -1,5 +1,5 @@
 """
-implement finite state projection algorithm
+Implement finite state projection algorithm
 """
 
 from time import perf_counter as pc

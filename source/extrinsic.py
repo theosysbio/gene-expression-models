@@ -1,5 +1,5 @@
 """
-General utility functions used elsewhere
+General utility functions for models with extrinsic noise
 """
 
 from copy import deepcopy

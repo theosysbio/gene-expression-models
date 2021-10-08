@@ -1,5 +1,5 @@
 """
-Plot analytic solutions
+Plot analytic solutions of a few example systems
 """
 
 import matplotlib.pyplot as plt

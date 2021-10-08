@@ -1,5 +1,5 @@
 """
-Functions for implementing the analytic solutions where known
+Functions for implementing analytic solutions for certain models
 """
 
 import math
