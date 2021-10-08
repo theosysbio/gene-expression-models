@@ -2,11 +2,11 @@
 implement finite state projection algorithm
 """
 
-from scipy.linalg import null_space
-import scipy.sparse as sps
-import numpy as np
-
 from time import perf_counter as pc
+
+import numpy as np
+import scipy.sparse as sps
+from scipy.linalg import null_space
 
 
 def FSP_twostate(parameters, N):

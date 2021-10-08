@@ -2,10 +2,11 @@
 Functions for implementing the analytic solutions where known
 """
 
+import math
+
+import mpmath as mpm
 import numpy as np
 import scipy.special as sp
-import math
-import mpmath as mpm
 
 mpm.mp.dps = 100  # Set precision for mpmath computations
 

@@ -2,11 +2,13 @@
 General utility functions used elsewhere
 """
 
-import scipy.stats as st
-import numpy as np
 from copy import deepcopy
+from decimal import Decimal
+
+import numpy as np
+import scipy.stats as st
+
 from recurrence import invgenfunc
-from decimal import Decimal, getcontext
 
 
 def solve_compound(

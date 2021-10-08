@@ -3,10 +3,10 @@ Functions for evaluating the recurrence relations
 """
 
 import math
-import numpy as np
 from decimal import Decimal, getcontext
-import scipy.special as sp
+
 import mpmath as mpm
+import numpy as np
 
 dfltPrec = 50  # Default precision for Decimal class
 
