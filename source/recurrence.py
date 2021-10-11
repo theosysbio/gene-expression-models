@@ -12,51 +12,71 @@ dfltPrec = 50  # Default precision for Decimal class
 
 
 def recurrence_two_switch(prms, N, M, precision=dfltPrec):
-    """Compute leaky gene distribution via the recurrence method.
+    """Compute prodability distribution for two-state leaky gene model via recurrence method.
 
-    Arguments:
-    prms -- List of the four rate parameters: v12,v21,K1,K2
-    N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1
-    M -- Number of terms evaluated by the recursion relation
-    precision -- Numerical precision used by the Decimal class"""
+    First calculates recurrence terms using recurrence_step_two_switch() and subsequently the distribution using invgenfunc()
+
+    Args:
+        prms: list of the four rate parameters: v12,v21,K1,K2
+        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        M: number of terms evaluated by the recursion relation
+        precision: numerical precision used by the Decimal class
+
+    Returns:
+        probability distribution for mRNa copy numbers n=0:N-1.
+    """
 
     G = recurrence_step_two_switch(prms, M, precision)
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
 def recurrence_three_switch(prms, N, M, precision=dfltPrec):
-    """Compute leaky gene distribution via the recurrence method.
+    """Compute prodability distribution for three-state leaky gene model via recurrence method.
 
-    Arguments:
-    parameters -- List of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
-    N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1
-    M -- Number of terms evaluated by the recursion relation
-    precision -- Numerical precision used by the Decimal class"""
+    Args:
+        prms: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
+        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        ML number of terms evaluated by the recursion relation
+        precision: numerical precision used by the Decimal class
+
+    Returns:
+        probability distribution for mRNa copy numbers n=0:N-1.
+    """
 
     G = recurrence_step_three_switch(prms, M, precision)
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
-def recurrence_feedback(prms, N, M, precision=dfltPrec):
-    """Compute feedback model solution via the recurrence method.
+def recurrence_feedback(parameters, N, M, precision=dfltPrec):
+    """Compute prodability distribution for feedback model via recurrence method.
 
-    Arguments:
-    parameters -- List of the five rate parameters: ru, rb, th, su, sb
-    N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1
-    M -- Number of terms evaluated by the recursion relation
-    precision -- Numerical precision used by the Decimal class"""
+    Args:
+        parameters: list of the five rate parameters: ru, rb, th, su, sb
+        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        M: number of terms evaluated by the recursion relation
+        precision: numerical precision used by the Decimal class
 
-    G = recurrence_step_feedback(prms, M, precision)
+    Returns:
+        probability distribution for mRNa copy numbers n=0:N-1.
+    """
+
+    G = recurrence_step_feedback(parameters, M, precision)
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
 def invgenfunc(G, n, precision=dfltPrec):
     """Back-calculate the distribution from the recurrence terms
 
-    Arguments:
-    G -- List of recurrence terms
-    n -- Copy number at which to evaluate the distribution
-    precision -- Numerical precision used by the Decimal class"""
+    several functions such as recurrence_step_two_switch() compute the recurrence coefficiencts h_i. invgenfunc() uses these to compute the probability distribution.
+
+    Args:
+        G: list of recurrence terms
+        n: copy number at which to evaluate the distribution
+        precision: numerical precision used by the Decimal class
+
+    Returns:
+        probability of mRNA copy number n
+    """
 
     getcontext().prec = precision
     M = len(G)
@@ -77,12 +97,16 @@ def invgenfunc(G, n, precision=dfltPrec):
 
 
 def recurrence_step_two_switch(prms, M, precision=dfltPrec):
-    """Compute leaky gene recurrence terms.
+    """Compute recurrence terms for leaky gene model.
 
-    Arguments:
-    prms -- List of the four rate parameters: v12,v21,K1,K2
-    M -- Number of terms evaluated by the recursion relation
-    precision -- Numerical precision used by the Decimal class"""
+    Args:
+        prms: list of the four rate parameters: v12,v21,K1,K2
+        M: number of terms evaluated by the recursion relation
+        precision: numerical precision used by the Decimal class
+
+    Returns:
+         Recurrence terms up to order M
+    """
 
     getcontext().prec = precision
 
@@ -117,12 +141,16 @@ def recurrence_step_two_switch(prms, M, precision=dfltPrec):
 
 
 def recurrence_step_three_switch(prms, M, precision=dfltPrec):
-    """Compute leaky gene distribution via the recurrence method.
+    """Compute recurrence terms for three-state leaky gene model.
 
     Arguments:
-    parameters -- List of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
-    M -- Number of terms evaluated by the recursion relation
-    precision -- Numerical precision used by the Decimal class"""
+        prms: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
+        M: number of terms evaluated by the recursion relation
+        precision: numerical precision used by the Decimal class
+
+    Returns:
+        recurrence terms up to order M
+    """
 
     getcontext().prec = precision
 
@@ -208,12 +236,16 @@ def recurrence_step_three_switch(prms, M, precision=dfltPrec):
 
 
 def recurrence_step_feedback(prms, M, precision=500):
-    """Compute feedback model solution via the recurrence method.
+    """Compute recurrence terms for feedback model.
 
     Arguments:
-    parameters -- List of the five rate parameters: ru, rb, th, su, sb
-    M -- Number of terms evaluated by the recursion relation
-    precision -- Decimal precision used by the mpmath mpf type"""
+        prms: list of the five rate parameters: ru, rb, th, su, sb
+        M: number of terms evaluated by the recursion relation
+        precision: decimal precision used by the mpmath mpf type
+
+    Returns:
+        recurrence terms up to order M
+    """
 
     mpm.mp.dps = precision
 
