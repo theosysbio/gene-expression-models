@@ -10,11 +10,15 @@ from scipy.linalg import null_space
 
 
 def fsp_twostate(parameters, N):
-    """Steady state distribution for a two-state model evaluated using the FSP.
+    """Steady-state distribution for a two-state model evaluated using the FSP.
 
-    Arguments:
-    parameters -- List of the four rate parameters: v12,v21,k1,k2
-    N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1"""
+    Args:
+        parameters: list of the four rate parameters: v12,v21,k1,k2
+        N: maximal mRNA copy number.
+
+    Returns:
+        probability distribution for mRNA copy numbers for n=0:N-1.
+    """
 
     t0 = pc()
     v12, v21, k1, k2 = parameters
@@ -54,9 +58,13 @@ def fsp_twostate(parameters, N):
 def fsp_threestate(parameters, N):
     """Steady state distribution for a three-state model evaluated using the FSP.
 
-    Arguments:
-    parameters -- List of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
-    N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1"""
+    Args:
+        parameters: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
+        N: maximal mRNA copy number.
+
+    Returns:
+        probability distribution for mRNA copy numbers for n=0:N-1.
+    """
 
     v12, v13, v21, v23, v31, v32, k1, k2, k3 = parameters
     A = np.array(
