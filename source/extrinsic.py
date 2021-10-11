@@ -21,18 +21,23 @@ def solve_compound(
     recurrence: bool = False,
     precision: int = 50,
 ) -> list:
-    """Obtain a compound distribution for the model in solfunc.
+    """Obtain recursion coefficients h_i for compound distribution for model in solfunc.
 
-    solFunc -- The solution function over which to compound
-    parameters -- List of parameters accepted by solFunc
-    hyperparameter -- Standard deviation of the compounding distribution
-    N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+    Args:
+        solFunc: the solution function over which to compound
+        parameters: list of parameters accepted by solFunc
+        hyperparameter: standard deviation of the compounding distribution
+        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        parIdx: index of the parameter over which the solution is compounded
+        distribution: string specifying the type of compounding distribution
+        recurrence: boolean specifying if compounding is over recurrence terms
+        precision: integer specifying the precision used by the Decimal class
 
-    Keyword arguments:
-    parIdx -- Index of the parameter over which the solution is compounded
-    distribution -- String specifying the type of compounding distribution
-    recurrence -- Boolean specifying if compounding is over recurrence terms
-    precision -- Integer specifying the precision used by the Decimal class
+    Returns:
+        recursion coefficients for mRNa copy numbers n=0:N-1.
+
+    Raises:
+        AssertionError: distribution given not supported
     """
 
     assert distribution in ["normal", "lognormal", "gamma"]
@@ -95,23 +100,25 @@ def solve_compound_rec(
     distribution: str = "normal",
     precision: int = 100,
 ) -> list:
-    """Obtain the coefficients h_i of the recurrence method for a compound
-    distribution.
+    """Compound distribution.
 
-    Acts as a wrapper for solve_compound as the underlying operation is
-    the same. Subsequently obtains the probability mass function.
+    Calls solve_compound() to obtain recurrence coefficients h_i and computes probability distribution using  invgenfunc()
 
     Arguments:
-    recFunc -- The recurrence relation function over which to compound
-    parameters -- List of parameters accepted by solFunc
-    hyperparameter -- Standard deviation of the compounding distribution
-    N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1
-    M -- Recursion length. The number of terms evaluated recursively
+        recFunc: the recurrence relation function over which to compound
+        parameters: list of parameters accepted by solFunc
+        hyperparameter: standard deviation of the compounding distribution
+        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        M: recursion length. The number of terms evaluated recursively
+        parIdx: index of the parameter over which the solution is compunded
+        distribution: string specifying the type of compounding distribution
+        precision: integer specifying the precision used by the Decimal class
 
-    Keyword arguments:
-    parIdx -- Index of the parameter over which the solution is compunded
-    distribution -- String specifying the type of compounding distribution
-    precision -- Integer specifying the precision used by the Decimal class
+    Returns:
+        probability distribution for mRNa copy numbers n=0:N-1.
+
+    Raises:
+        AssertionError: distribution given not supported
     """
 
     assert distribution in ["normal", "lognormal", "gamma"]
