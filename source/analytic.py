@@ -10,8 +10,9 @@ import scipy.special as sp
 
 mpm.mp.dps = 100  # Set precision for mpmath computations
 
+
 # First a collection of utility functions used subsequently
-def fracrise(x, y, r):
+def fracrise(x: float, y: float, r: int) -> float:
     """Utility function for use within other analytic solutions.
 
     Computes the ratio of the rising factorials of x and y to order r
@@ -24,7 +25,7 @@ def fracrise(x, y, r):
     return q
 
 
-def fracrise_mpm(x, y, r):
+def fracrise_mpm(x: float, y: float, r: int) -> float:
     """High precision version of fracrise"""
     q = mpm.mpf(1)
     for m in range(r):
@@ -33,14 +34,14 @@ def fracrise_mpm(x, y, r):
     return q
 
 
-def multinomial(params):
-    """Return the multinomial of the tuple of parameters with repect to their sum."""
+def multinomial(params: list) -> float:
+    """Return the multinomial of the tuple of parameters with respect to their sum."""
     if len(params) == 1:
         return 1
     return sp.binom(sum(params), params[-1]) * multinomial(params[:-1])
 
 
-def multinomial_mpm(params):
+def multinomial_mpm(params: list) -> float:
     """High precision version of the multinomial function"""
     if len(params) == 1:
         return 1
@@ -108,7 +109,7 @@ def fracrise_memo(lamda, mu, r):
     return fracrise(lamda, lamda + mu, r)
 
 
-def analytic_twostate(parameters, N):
+def analytic_twostate(parameters: list, N: int) -> list:
     """Analytic steady state distribution for a two-state model (leaky telegraph).
 
     Requires computation at high precision via mpm for accurate convergence of
@@ -139,7 +140,7 @@ def analytic_twostate(parameters, N):
     return P / P.sum()
 
 
-def analytic_telegraph(parameters, N):
+def analytic_telegraph(parameters: list, N: int) -> list:
     """Analytic steady state distribution for the Telegraph model.
 
     Arguments:
@@ -166,7 +167,7 @@ def analytic_telegraph(parameters, N):
     return P / P.sum()
 
 
-def analytic_twotwo(parameters, N):
+def analytic_twotwo(parameters: list, N: int) -> list:
     """Analytic solution to the 2^2 multistate model.
 
     Arguments:
@@ -176,7 +177,7 @@ def analytic_twotwo(parameters, N):
     return np.array([twotwo_n(parameters, n) for n in range(0, N)])
 
 
-def analytic_twothree(parameters, N):
+def analytic_twothree(parameters: list, N: int) -> list:
     """Analytic solution to the 2^3 multistate model.
 
     Arguments:
@@ -186,7 +187,7 @@ def analytic_twothree(parameters, N):
     return [twothree_n(parameters, n) for n in range(0, N)]
 
 
-def twotwo_n(parameters, n):
+def twotwo_n(parameters: list, n: int) -> list:
     """Analytic solution to the 2^2 multistate model for a single copy number n.
 
     Arguments:
@@ -218,7 +219,7 @@ def twotwo_n(parameters, n):
     return p / math.factorial(n)
 
 
-def twothree_n(parameters, n):
+def twothree_n(parameters: list, n: int) -> list:
     """Analytic solution to the 2^3 multistate model for a single copy number n.
 
     Arguments:
@@ -259,7 +260,7 @@ def twothree_n(parameters, n):
     return p / mpm.factorial(n)
 
 
-def analytic_feedback(parameters, N):
+def analytic_feedback(parameters: list, N: int) -> list:
     """Analytic solution to the feedback model.
 
     Solution originally published in Grima et al, JCP 137, 035104 (2012)
