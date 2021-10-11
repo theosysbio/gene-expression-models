@@ -9,7 +9,7 @@ import scipy.sparse as sps
 from scipy.linalg import null_space
 
 
-def fsp_twostate(parameters, N):
+def fsp_twostate(parameters: list, N: int) -> list:
     """Steady-state distribution for a two-state model evaluated using the FSP.
 
     Args:
@@ -55,7 +55,7 @@ def fsp_twostate(parameters, N):
     return P  # , matrix_time, null_time
 
 
-def fsp_threestate(parameters, N):
+def fsp_threestate(parameters: list, N: int) -> list:
     """Steady state distribution for a three-state model evaluated using the FSP.
 
     Args:
