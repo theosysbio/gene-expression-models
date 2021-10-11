@@ -12,29 +12,30 @@ from recurrence import invgenfunc
 
 
 def solve_compound(
-    solFunc,
-    parameters,
-    hyperparameter,
-    N,
-    parIdx=3,
-    distribution="normal",
-    recurrence=False,
-    precision=50,
-):
+    sol_func,
+    parameters: list,
+    hyperparameter: float,
+    N: int,
+    parIdx: int = 3,
+    distribution: str = "normal",
+    recurrence: bool = False,
+    precision: int = 50,
+) -> list:
     """Obtain a compound distribution for the model in solfunc.
 
-    Arguments:
     solFunc -- The solution function over which to compound
     parameters -- List of parameters accepted by solFunc
     hyperparameter -- Standard deviation of the compounding distribution
     N -- Maximal mRNA copy number. The distribution is evaluated for n=0:N-1
 
     Keyword arguments:
-    parIdx -- Index of the parameter over which the solution is compunded
+    parIdx -- Index of the parameter over which the solution is compounded
     distribution -- String specifying the type of compounding distribution
     recurrence -- Boolean specifying if compounding is over recurrence terms
     precision -- Integer specifying the precision used by the Decimal class
     """
+
+    assert distribution in ["normal", "lognormal", "gamma"]
 
     # Specify some hyperparameters governing integration accuracy
     cdfMax = 0.999
@@ -65,7 +66,7 @@ def solve_compound(
     P = np.zeros(N)
     parMod = deepcopy(parameters)
 
-    # If operating on the recurrence terms, need to comnvert to Decimal
+    # If operating on the recurrence terms, need to convert to Decimal
     if recurrence:
         P = np.array([Decimal(p) for p in P])
         dThet = Decimal(dThet)
@@ -74,11 +75,11 @@ def solve_compound(
     for thet in thetVec:
         parMod[parIdx] = thet
         if recurrence:
-            P += np.array(solFunc(parMod, N, precision=precision)) * Decimal(
+            P += np.array(sol_func(parMod, N, precision=precision)) * Decimal(
                 dist.pdf(thet)
             )
         else:
-            P += solFunc(parMod, N) * dist.pdf(thet)
+            P += sol_func(parMod, N) * dist.pdf(thet)
 
     P *= dThet
     return P
@@ -86,14 +87,14 @@ def solve_compound(
 
 def solve_compound_rec(
     recFunc,
-    parameters,
-    hyperparameter,
-    N,
-    M,
-    parIdx=3,
-    distribution="normal",
-    precision=100,
-):
+    parameters: list,
+    hyperparameter: float,
+    N: int,
+    M: int,
+    parIdx: int = 3,
+    distribution: str = "normal",
+    precision: int = 100,
+) -> list:
     """Obtain the coefficients h_i of the recurrence method for a compound
     distribution.
 
@@ -112,6 +113,8 @@ def solve_compound_rec(
     distribution -- String specifying the type of compounding distribution
     precision -- Integer specifying the precision used by the Decimal class
     """
+
+    assert distribution in ["normal", "lognormal", "gamma"]
 
     H = solve_compound(
         recFunc,
