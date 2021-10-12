@@ -11,7 +11,7 @@ import numpy as np
 dfltPrec = 50  # Default precision for Decimal class
 
 
-def recurrence_two_switch(prms, N, M, precision=dfltPrec):
+def recurrence_two_switch(prms: list, N: int, M: int, precision: int = dfltPrec) -> list:
     """Compute prodability distribution for two-state leaky gene model via recurrence method.
 
     First calculates recurrence terms using recurrence_step_two_switch() and subsequently the distribution using invgenfunc()
@@ -30,7 +30,7 @@ def recurrence_two_switch(prms, N, M, precision=dfltPrec):
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
-def recurrence_three_switch(prms, N, M, precision=dfltPrec):
+def recurrence_three_switch(prms: list, N: int, M: int, precision: int = dfltPrec) -> list:
     """Compute prodability distribution for three-state leaky gene model via recurrence method.
 
     Args:
@@ -47,7 +47,7 @@ def recurrence_three_switch(prms, N, M, precision=dfltPrec):
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
-def recurrence_feedback(parameters, N, M, precision=dfltPrec):
+def recurrence_feedback(parameters: list, N: int, M: int, precision: int = dfltPrec):
     """Compute prodability distribution for feedback model via recurrence method.
 
     Args:
@@ -64,7 +64,7 @@ def recurrence_feedback(parameters, N, M, precision=dfltPrec):
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
-def invgenfunc(G, n, precision=dfltPrec):
+def invgenfunc(G: list, n: int, precision: int = dfltPrec):
     """Back-calculate the distribution from the recurrence terms
 
     several functions such as recurrence_step_two_switch() compute the recurrence coefficiencts h_i. invgenfunc() uses these to compute the probability distribution.
@@ -96,7 +96,7 @@ def invgenfunc(G, n, precision=dfltPrec):
     return s / Decimal(math.factorial(n))
 
 
-def recurrence_step_two_switch(prms, M, precision=dfltPrec):
+def recurrence_step_two_switch(prms: list, M: int, precision: int = dfltPrec):
     """Compute recurrence terms for leaky gene model.
 
     Args:
@@ -140,7 +140,7 @@ def recurrence_step_two_switch(prms, M, precision=dfltPrec):
     return G
 
 
-def recurrence_step_three_switch(prms, M, precision=dfltPrec):
+def recurrence_step_three_switch(prms: list, M: int, precision: int = dfltPrec) -> list:
     """Compute recurrence terms for three-state leaky gene model.
 
     Arguments:
@@ -154,7 +154,7 @@ def recurrence_step_three_switch(prms, M, precision=dfltPrec):
 
     getcontext().prec = precision
 
-    def d(n):
+    def d(n: float) -> float:
         return (
             n ** Decimal(2)
             + n * (v12 + v13 + v21 + v23 + v31 + v32)
@@ -164,7 +164,7 @@ def recurrence_step_three_switch(prms, M, precision=dfltPrec):
             + v23 * v31
         )
 
-    def update(nn, ss):
+    def update(nn: int, ss: float) -> float:
         n = Decimal(nn)
         up = [None] * 3
         for i in range(3):
@@ -235,7 +235,7 @@ def recurrence_step_three_switch(prms, M, precision=dfltPrec):
     return G
 
 
-def recurrence_step_feedback(prms, M, precision=500):
+def recurrence_step_feedback(prms: list, M: int, precision: int = 500) -> list:
     """Compute recurrence terms for feedback model.
 
     Arguments:
@@ -249,7 +249,7 @@ def recurrence_step_feedback(prms, M, precision=500):
 
     mpm.mp.dps = precision
 
-    def update(nn, h0m2, h0m1, h1m2, h1m1):
+    def update(nn: int, h0m2: float, h0m1: float, h1m2: float, h1m1: float) -> list[float]:
         n = mpm.mpf(nn)
 
         u1 = (
