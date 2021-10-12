@@ -13,25 +13,25 @@ from recurrence import invgenfunc
 
 def solve_compound(
     sol_func,
-    parameters: list,
-    hyperparameter: float,
-    N: int,
-    parIdx: int = 3,
-    distribution: str = "normal",
-    recurrence: bool = False,
-    precision: int = 50,
+    parameter_list: list,
+    std_of_compound_dist: float,
+    max_mRNA_copy_number: int,
+    index_compound_parameter: int = 3,
+    compounding_distribution: str = "normal",
+    compound_over_recurrence_terms: bool = False,
+    decimal_precision: int = 50,
 ) -> list:
     """Obtain recursion coefficients h_i for compound distribution for model in solfunc.
 
     Args:
-        solFunc: the solution function over which to compound
-        parameters: list of parameters accepted by solFunc
-        hyperparameter: standard deviation of the compounding distribution
-        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
-        parIdx: index of the parameter over which the solution is compounded
-        distribution: string specifying the type of compounding distribution
-        recurrence: boolean specifying if compounding is over recurrence terms
-        precision: integer specifying the precision used by the Decimal class
+        sol_func: the solution function over which to compound
+        parameter_list: list of parameters accepted by solFunc
+        std_of_compound_dist: standard deviation of the compounding distribution
+        max_mRNA_copy_number: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        index_compound_parameter: index of the parameter over which the solution is compounded
+        compounding_distribution: string specifying the type of compounding distribution
+        compound_over_recurrence_terms: boolean specifying if compounding is over recurrence terms
+        decimal_precision: integer specifying the precision used by the Decimal class
 
     Returns:
         recursion coefficients for mRNa copy numbers n=0:N-1.
@@ -40,22 +40,22 @@ def solve_compound(
         AssertionError: distribution given not supported
     """
 
-    assert distribution in ["normal", "lognormal", "gamma"]
+    assert compounding_distribution in ["normal", "lognormal", "gamma"]
 
     # Specify some hyperparameters governing integration accuracy
     cdfMax = 0.999
     nTheta = 200
 
     # Set up the parameter distribution
-    m, s = parameters[parIdx], hyperparameter
-    if distribution == "normal":
+    m, s = parameter_list[index_compound_parameter], std_of_compound_dist
+    if compounding_distribution == "normal":
         a, b = (0 - m) / s, 10000
         dist = st.truncnorm(a, b, m, s)
-    elif distribution == "gamma":
+    elif compounding_distribution == "gamma":
         theta = s ** 2 / m
         k = (m / s) ** 2
         dist = st.gamma(k, scale=theta)
-    elif distribution == "lognormal":
+    elif compounding_distribution == "lognormal":
         mu = np.log(m / np.sqrt(1 + (s / m) ** 2))
         sg = np.sqrt(np.log(1 + (s / m) ** 2))
         dist = st.lognorm(s=sg, scale=np.exp(mu))
@@ -68,51 +68,51 @@ def solve_compound(
     thetMin = dist.ppf(1 - cdfMax)
     thetVec = np.linspace(thetMin, thetMax, nTheta)
     dThet = thetVec[1] - thetVec[0]
-    P = np.zeros(N)
-    parMod = deepcopy(parameters)
+    P = np.zeros(max_mRNA_copy_number)
+    parMod = deepcopy(parameter_list)
 
     # If operating on the recurrence terms, need to convert to Decimal
-    if recurrence:
+    if compound_over_recurrence_terms:
         P = np.array([Decimal(p) for p in P])
         dThet = Decimal(dThet)
 
     # Evaluate distribution for each theta and add contribution
     for thet in thetVec:
-        parMod[parIdx] = thet
-        if recurrence:
-            P += np.array(sol_func(parMod, N, precision=precision)) * Decimal(
+        parMod[index_compound_parameter] = thet
+        if compound_over_recurrence_terms:
+            P += np.array(sol_func(parMod, max_mRNA_copy_number, precision=decimal_precision)) * Decimal(
                 dist.pdf(thet)
             )
         else:
-            P += sol_func(parMod, N) * dist.pdf(thet)
+            P += sol_func(parMod, max_mRNA_copy_number) * dist.pdf(thet)
 
     P *= dThet
     return P
 
 
 def solve_compound_rec(
-    recFunc,
-    parameters: list,
-    hyperparameter: float,
-    N: int,
-    M: int,
-    parIdx: int = 3,
-    distribution: str = "normal",
-    precision: int = 100,
+    recurrence_func,
+    parameter_list: list,
+    std_of_compound_dist: float,
+    max_mRNA_copy_number: int,
+    recursion_length: int,
+    index_compound_parameter: int = 3,
+    compounding_distribution: str = "normal",
+    decimal_precision: int = 100,
 ) -> list:
     """Compound distribution.
 
     Calls solve_compound() to obtain recurrence coefficients h_i and computes probability distribution using  invgenfunc()
 
     Arguments:
-        recFunc: the recurrence relation function over which to compound
-        parameters: list of parameters accepted by solFunc
-        hyperparameter: standard deviation of the compounding distribution
-        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
-        M: recursion length. The number of terms evaluated recursively
+        recurrence_func: the recurrence relation function over which to compound
+        parameter_list: list of parameters accepted by solFunc
+        std_of_compound_dist: standard deviation of the compounding distribution
+        max_mRNA_copy_number: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        recursion_length: recursion length. The number of terms evaluated recursively
         parIdx: index of the parameter over which the solution is compunded
-        distribution: string specifying the type of compounding distribution
-        precision: integer specifying the precision used by the Decimal class
+        compounding_distribution: string specifying the type of compounding distribution
+        decimal_precision: integer specifying the precision used by the Decimal class
 
     Returns:
         probability distribution for mRNa copy numbers n=0:N-1.
@@ -121,16 +121,8 @@ def solve_compound_rec(
         AssertionError: distribution given not supported
     """
 
-    assert distribution in ["normal", "lognormal", "gamma"]
+    assert compounding_distribution in ["normal", "lognormal", "gamma"]
 
-    H = solve_compound(
-        recFunc,
-        parameters,
-        hyperparameter,
-        M,
-        parIdx,
-        distribution,
-        recurrence=True,
-        precision=precision,
-    )
-    return [invgenfunc(H, n, precision=precision) for n in range(0, N)]
+    H = solve_compound(recurrence_func, parameter_list, std_of_compound_dist, recursion_length, index_compound_parameter, compounding_distribution,
+                       compound_over_recurrence_terms=True, decimal_precision=decimal_precision)
+    return [invgenfunc(H, n, precision=decimal_precision) for n in range(0, max_mRNA_copy_number)]
