@@ -9,26 +9,26 @@ import scipy.sparse as sps
 from scipy.linalg import null_space
 
 
-def fsp_twostate(parameters: list, N: int) -> list:
+def fsp_twostate(parameter_list: list, max_mRNA_copy_number: int) -> list:
     """Steady-state distribution for a two-state model evaluated using the FSP.
 
     Args:
-        parameters: list of the four rate parameters: v12,v21,k1,k2
-        N: maximal mRNA copy number.
+        parameter_list: list of the four rate parameters: v12,v21,k1,k2
+        max_mRNA_copy_number: maximal mRNA copy number.
 
     Returns:
-        probability distribution for mRNA copy numbers for n=0:N-1.
+        probability distribution for mRNA copy numbers for n=0:(max_mRNA_copy_number-1).
     """
 
     t0 = pc()
-    v12, v21, k1, k2 = parameters
+    v12, v21, k1, k2 = parameter_list
     A = np.array([[-v12, v21], [v12, -v21]])
     T = np.diag([k1, k2])
     D = np.eye(2)
-    AG = sps.lil_matrix((2 * N, 2 * N), dtype=np.float64)
+    AG = sps.lil_matrix((2 * max_mRNA_copy_number, 2 * max_mRNA_copy_number), dtype=np.float64)
 
-    for i in range(1, N + 1):
-        if i < N:
+    for i in range(1, max_mRNA_copy_number + 1):
+        if i < max_mRNA_copy_number:
             AG[(i - 1) * 2 : i * 2, (i - 1) * 2 : i * 2] = (
                 AG[(i - 1) * 2 : i * 2, (i - 1) * 2 : i * 2] + A - T - (i - 1) * D
             )
@@ -49,33 +49,33 @@ def fsp_twostate(parameters: list, N: int) -> list:
 
     P = np.squeeze(P)
     P = P / P.sum()
-    L = 2 * N + 1
+    L = 2 * max_mRNA_copy_number + 1
     P = P[0:L:2] + P[1:L:2]
 
     return P  # , matrix_time, null_time
 
 
-def fsp_threestate(parameters: list, N: int) -> list:
+def fsp_threestate(parameter_list: list, max_mRNA_copy_number: int) -> list:
     """Steady state distribution for a three-state model evaluated using the FSP.
 
     Args:
-        parameters: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
-        N: maximal mRNA copy number.
+        parameter_list: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
+        max_mRNA_copy_number: maximal mRNA copy number.
 
     Returns:
-        probability distribution for mRNA copy numbers for n=0:N-1.
+        probability distribution for mRNA copy numbers for n=0:(max_mRNA_copy_number-1).
     """
 
-    v12, v13, v21, v23, v31, v32, k1, k2, k3 = parameters
+    v12, v13, v21, v23, v31, v32, k1, k2, k3 = parameter_list
     A = np.array(
         [[-v12 - v13, v21, v31], [v12, -v21 - v23, v32], [v13, v23, -v31 - v32]]
     )
     T = np.diag([k1, k2, k3])
     D = np.eye(3)
-    AG = sps.lil_matrix((3 * N, 3 * N), dtype=np.float64)
+    AG = sps.lil_matrix((3 * max_mRNA_copy_number, 3 * max_mRNA_copy_number), dtype=np.float64)
 
-    for i in range(1, N + 1):
-        if i < N:
+    for i in range(1, max_mRNA_copy_number + 1):
+        if i < max_mRNA_copy_number:
             AG[(i - 1) * 3 : i * 3, (i - 1) * 3 : i * 3] = (
                 AG[(i - 1) * 3 : i * 3, (i - 1) * 3 : i * 3] + A - T - (i - 1) * D
             )
@@ -90,6 +90,6 @@ def fsp_threestate(parameters: list, N: int) -> list:
     P = null_space(AG.toarray())
     P = np.squeeze(P)
     P = P / P.sum()
-    L = 3 * N + 1
+    L = 3 * max_mRNA_copy_number + 1
     P = P[0:L:3] + P[1:L:3] + P[2:L:3]
     return P
