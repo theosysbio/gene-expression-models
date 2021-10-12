@@ -12,7 +12,7 @@ mpm.mp.dps = 100  # Set precision for mpmath computations
 
 
 # First a collection of utility functions used subsequently
-def fracrise(x: float, y: float, r: int) -> float:
+def fracrise(x: float, y: float, order: int) -> float:
     """Compute ratio of rising factorials.
 
     Utility function for use within other analytic solutions.
@@ -22,23 +22,23 @@ def fracrise(x: float, y: float, r: int) -> float:
     Args:
         x: combination of transition rates
         y: combination of transition rates
-        r: order of rising factorial
+        order: order of rising factorial
 
     Returns
         Ratio of rising factorials as float
     """
 
     q = 1.0
-    for m in range(r):
+    for m in range(order):
         q *= (x + m) / (y + m)
 
     return q
 
 
-def fracrise_mpm(x: float, y: float, r: int) -> float:
+def fracrise_mpm(x: float, y: float, order: int) -> float:
     """High precision version of fracrise()"""
     q = mpm.mpf(1)
-    for m in range(r):
+    for m in range(order):
         m = mpm.mpf(m)
         q *= (x + m) / (y + m)
     return q
@@ -62,11 +62,11 @@ def multinomial(integer_tuple: tuple) -> int:
     )
 
 
-def multinomial_mpm(params: list) -> float:
+def multinomial_mpm(integer_tuple: tuple) -> float:
     """High precision version of the multinomial function"""
-    if len(params) == 1:
+    if len(integer_tuple) == 1:
         return 1
-    return mpm.binomial(sum(params), params[-1]) * multinomial_mpm(params[:-1])
+    return mpm.binomial(sum(integer_tuple), integer_tuple[-1]) * multinomial_mpm(integer_tuple[:-1])
 
 
 # memoize functions that enable previous function calls to be stored in a dictionary.
@@ -137,27 +137,27 @@ def fracrise_memo(lamda, mu, r):
     return fracrise(lamda, lamda + mu, r)
 
 
-def analytic_twostate(parameters: list, N: int) -> list:
+def analytic_twostate(parameter_list: list, max_mRNA_copy_number: int) -> list:
     """Analytic steady state distribution for a two-state model (leaky telegraph).
 
     Requires computation at high precision via mpm for accurate convergence of
     the summation.
 
     Args:
-        parameters: list of the four rate parameters: v12,v21,K0,K1
-        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        parameter_list: list of the four rate parameters: v12,v21,K0,K1
+        max_mRNA_copy_number: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
 
     Returns:
-          probability distribution for mRNa copy numbers n=0:N-1.
+          probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
     """
 
-    v12 = mpm.mpf(parameters[0])
-    v21 = mpm.mpf(parameters[1])
-    K0 = mpm.mpf(parameters[2])
-    K1 = mpm.mpf(parameters[3])
+    v12 = mpm.mpf(parameter_list[0])
+    v21 = mpm.mpf(parameter_list[1])
+    K0 = mpm.mpf(parameter_list[2])
+    K1 = mpm.mpf(parameter_list[3])
 
-    P = mpm.matrix(np.zeros(N))  # Preallocate at high precision
-    for n in range(N):
+    P = mpm.matrix(np.zeros(max_mRNA_copy_number))  # Preallocate at high precision
+    for n in range(max_mRNA_copy_number):
         for r in range(n + 1):
             mpmCalc = (
                 mpm.power(K1, n - r)
@@ -172,25 +172,25 @@ def analytic_twostate(parameters: list, N: int) -> list:
     return P / P.sum()
 
 
-def analytic_telegraph(parameters: list, N: int) -> list:
+def analytic_telegraph(parameter_list: list, max_mRNA_copy_number: int) -> list:
     """Analytic steady state distribution for the Telegraph model.
 
     Args:
-        parameters: list of the three rate parameters: v12,v21,K
-        N: maximal mRNA copy number.
+        parameter_list: list of the three rate parameters: v12,v21,K
+        max_mRNA_copy_number: maximal mRNA copy number.
 
     Returns
-        probability distribution for mRNa copy numbers n=0:N-1.
+        probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
     """
 
-    v12, v21, K = parameters
-    P = np.zeros(N)
+    v12, v21, K = parameter_list
+    P = np.zeros(max_mRNA_copy_number)
 
     a = v12
     b = v12 + v21
     c = K
 
-    for n in range(N):
+    for n in range(max_mRNA_copy_number):
         P[n] = c ** n * sp.hyp1f1(a + n, b + n, -c) / math.factorial(n)
         if np.isinf(P[n]):  # Use Stirling's approximation for n!
             P[n] = (
@@ -203,49 +203,50 @@ def analytic_telegraph(parameters: list, N: int) -> list:
     return P / P.sum()
 
 
-def analytic_twotwo(parameters: list, N: int) -> list:
+def analytic_twotwo(parameter_list: list, max_mRNA_copy_number: int) -> list:
     """Analytic solution to the 2^2 multistate model.
 
     Args:
-        parameters: list of the seven rate parameters: lamda0,mu0,lamda1,mu1, KB,k0,k1
-        N: maximal mRNA copy number.
+        parameter_list: list of the seven rate parameters: lamda0,mu0,lamda1,mu1, KB,k0,k1
+        max_mRNA_copy_number: maximal mRNA copy number.
 
     Returns
-        probability distribution for mRNa copy numbers n=0:N-1.
+        probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
     """
 
-    return np.array([twotwo_n(parameters, n) for n in range(0, N)])
+    return np.array([twotwo_n(parameter_list, n) for n in range(0, max_mRNA_copy_number)])
 
 
-def analytic_twothree(parameters: list, N: int) -> list:
+def analytic_twothree(parameter_list: list, max_mRNA_copy_number: int) -> list:
     """Analytic solution to the 2^3 multistate model.
 
     Args:
-        parameters: list of the ten rate parameters: lamda0,mu0,lamda1,mu1,lamda2,mu2, KB,k0,k1,k2.
-        N: maximal mRNA copy number.
+        parameter_list: list of the ten rate parameters: lamda0,mu0,lamda1,mu1,lamda2,mu2, KB,k0,k1,k2.
+        max_mRNA_copy_number: maximal mRNA copy number.
 
     Returns
-        probability distribution for mRNa copy numbers n=0:N-1.
+        probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
      """
 
-    return [twothree_n(parameters, n) for n in range(0, N)]
+    return [twothree_n(parameter_list, n) for n in range(0, max_mRNA_copy_number)]
 
 
-def twotwo_n(parameters: list, n: int) -> list:
+def twotwo_n(parameter_list: list, mRNA_copy_number: int) -> float:
     """Analytic solution to the 2^2 multistate model for a single copy number n.
 
     Args:
-        parameters: list of the seven rate parameters: lamda0,mu0,lamda1,mu1, KB,k0,k1
-        n: copy number at which the distribution is evaluated.
+        parameter_list: list of the seven rate parameters: lamda0,mu0,lamda1,mu1, KB,k0,k1
+        mRNA_copy_number: copy number at which the distribution is evaluated.
 
     Returns:
-        probability of mRNA copy number n
+        probability of mRNA copy number mRNA_copy_number
     """
 
     # Set up the parameters
-    lamda0, mu0, lamda1, mu1, KB, k0, k1 = parameters
+    lamda0, mu0, lamda1, mu1, KB, k0, k1 = parameter_list
     k0A, k1A = KB, k0 + KB
     k0B, k1B = 0, k1
+    n = mRNA_copy_number
 
     # Form list of all possible r_i combinations
     r_combinations = [(i, j, n - i - j) for i in range(n + 1) for j in range(n + 1 - i)]
@@ -267,15 +268,15 @@ def twotwo_n(parameters: list, n: int) -> list:
     return p / math.factorial(n)
 
 
-def twothree_n(parameters: list, n: int) -> list:
+def twothree_n(parameters: list, mRNA_copy_number: int) -> list:
     """Analytic solution to the 2^3 multistate model for a single copy number n.
 
     Args:
         parameters: list of the ten rate parameters: lamda0,mu0,lamda1,mu1,lamda2,mu2, KB,k0,k1,k2
-        n: copy number at which the distribution is evaluated.
+        mRNA_copy_number: copy number at which the distribution is evaluated.
 
     Returns:
-        probability of mRNA copy number n
+        probability of mRNA copy number mRNA_copy_number
     """
 
     # Set up the parameters
@@ -283,6 +284,7 @@ def twothree_n(parameters: list, n: int) -> list:
     k0A, k1A = mpm.mpf(KB), mpm.mpf(k0 + KB)
     k0B, k1B = mpm.mpf(0), mpm.mpf(k1)
     k0C, k1C = mpm.mpf(0), mpm.mpf(k2)
+    n = mRNA_copy_number
 
     # Obtain list of all possible combinations of r_i
     r_combinations = [
@@ -312,17 +314,17 @@ def twothree_n(parameters: list, n: int) -> list:
     return p / mpm.factorial(n)
 
 
-def analytic_feedback(parameters: list, N: int) -> list:
+def analytic_feedback(parameters: list, max_mRNA_copy_number: int) -> list:
     """Analytic solution to the feedback model.
 
     Solution originally published in Grima et al, JCP 137, 035104 (2012)
 
     Args:
         parameters: list of the five rate parameters: ru, rb, th, su, sb
-        N: maximal mRNA copy number.
+        max_mRNA_copy_number: maximal mRNA copy number.
 
     Returns
-        probability distribution for mRNa copy numbers n=0:N-1.
+        probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
     """
 
     # Define some useful values
@@ -367,6 +369,6 @@ def analytic_feedback(parameters: list, N: int) -> list:
         Sb * a * sp.hyp1f1(a + 1, b, w0) / ru / (Sb - 1) - su * sp.hyp1f1(a, b, w0) / R
     )
 
-    P = [P1(n) + P0(n) for n in range(1, N)]
+    P = [P1(n) + P0(n) for n in range(1, max_mRNA_copy_number)]
     P.insert(0, p00 + P1(0))
     return P / sum(P)
