@@ -249,7 +249,7 @@ def recurrence_step_feedback(prms: list, M: int, precision: int = 500) -> list:
 
     mpm.mp.dps = precision
 
-    def update(nn: int, h0m2: float, h0m1: float, h1m2: float, h1m1: float) -> list[float]:
+    def update(nn: int, h0m2: float, h0m1: float, h1m2: float, h1m1: float) -> list:
         n = mpm.mpf(nn)
 
         u1 = (
