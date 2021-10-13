@@ -26,15 +26,8 @@ pStd = 10.0
 dNB = st.nbinom((pVec[3] / pStd) ** 2, 1 - pStd ** 2 / (pVec[3] + pStd ** 2))
 print("Calculating compound two-state")
 P = [dNB.pmf(n) for n in range(N)]
-Q = ext.solve_compound_rec(
-    rec.recurrence_step_two_switch,
-    pVec,
-    pStd,
-    N,
-    400,
-    distribution="gamma",
-    precision=60,
-)
+Q = ext.solve_compound_rec(rec.recurrence_step_two_switch, pVec, pStd, N, 400, compounding_distribution="gamma",
+                           decimal_precision=60)
 fig = plt.figure()
 fig.suptitle("Compound leaky Telegraph model")
 plt.plot(range(N), P, label="Analytic solution")
@@ -50,16 +43,8 @@ kstd = 10.0
 N = 100
 print("Calculating compound three-state")
 P = rec.recurrence_three_switch(prms, N, M=300)
-Q = ext.solve_compound_rec(
-    rec.recurrence_step_three_switch,
-    prms,
-    kstd,
-    N,
-    M=391,
-    parIdx=8,
-    distribution="lognormal",
-    precision=73,
-)
+Q = ext.solve_compound_rec(rec.recurrence_step_three_switch, prms, kstd, N, recursion_length=391, index_compound_parameter=8, compounding_distribution="lognormal",
+                           decimal_precision=73)
 
 plt.clf()
 fig, ax = plt.subplots()
@@ -86,7 +71,7 @@ N = 100
 print("Calculating compound four-state")
 P = an.analytic_twotwo(prms, N)
 Q = ext.solve_compound(
-    an.analytic_twotwo, prms, kstd, N, parIdx=6, distribution="lognormal"
+    an.analytic_twotwo, prms, kstd, N, index_compound_parameter=6, compounding_distribution="lognormal"
 )
 
 plt.clf()
