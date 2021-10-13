@@ -162,9 +162,6 @@ def twothree_n(parameters: list, mRNA_copy_number: int) -> list:
 
     # Set up the parameters
     lamda0, mu0, lamda1, mu1, lamda2, mu2, KB, k0, k1, k2 = parameters
-    # k0A, k1A = mpm.mpf(KB), mpm.mpf(k0 + KB)
-    # k0B, k1B = mpm.mpf(0), mpm.mpf(k1)
-    # k0C, k1C = mpm.mpf(0), mpm.mpf(k2)
     n = mRNA_copy_number
 
     # Obtain list of all possible combinations of r_i
@@ -252,5 +249,4 @@ def analytic_feedback(parameters: list, max_mRNA_copy_number: int) -> list:
 
     prob_dist = [P1(n) + P0(n) for n in range(1, max_mRNA_copy_number)]
     prob_dist.insert(0, p00 + P1(0))
-    prob_dist = prob_dist / sum(prob_dist)
-    return prob_dist
+    return prob_dist / sum(prob_dist)
