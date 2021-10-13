@@ -1,5 +1,11 @@
 """
-Functions for implementing analytic solutions for certain models
+Functions for implementing analytic solutions for certain gene models
+
+Available functions:
+    - analytic_twostate
+    - analytic_telegraph
+    - analytic_twotwo
+    - analytic_feedback
 """
 
 import math
@@ -8,133 +14,9 @@ import mpmath as mpm
 import numpy as np
 import scipy.special as sp
 
+import source.utility_functions as ut
+
 mpm.mp.dps = 100  # Set precision for mpmath computations
-
-
-# First a collection of utility functions used subsequently
-def fracrise(x: float, y: float, order: int) -> float:
-    """Compute ratio of rising factorials.
-
-    Utility function for use within other analytic solutions.
-    Computes the ratio of the rising factorials of x and y to order r
-    q = x^{(r)}/y^{(r)}
-
-    Args:
-        x: combination of transition rates
-        y: combination of transition rates
-        order: order of rising factorial
-
-    Returns
-        Ratio of rising factorials as float
-    """
-
-    q = 1.0
-    for m in range(order):
-        q *= (x + m) / (y + m)
-
-    return q
-
-
-def fracrise_mpm(x: float, y: float, order: int) -> float:
-    """High precision version of fracrise()"""
-    q = mpm.mpf(1)
-    for m in range(order):
-        m = mpm.mpf(m)
-        q *= (x + m) / (y + m)
-    return q
-
-
-def multinomial(integer_tuple: tuple) -> int:
-    """Compute multinomial of tuple of parameters.
-
-    Recursive implementation of multinomial of tuple of integers w.r.t their sum.
-
-    Args:
-        integer_tuple: tuple of integers
-
-    Returns
-        int
-    """
-    if len(integer_tuple) == 1:
-        return 1
-    return sp.binom(sum(integer_tuple), integer_tuple[-1]) * multinomial(
-        integer_tuple[:-1]
-    )
-
-
-def multinomial_mpm(integer_tuple: tuple) -> float:
-    """High precision version of the multinomial function"""
-    if len(integer_tuple) == 1:
-        return 1
-    return mpm.binomial(sum(integer_tuple), integer_tuple[-1]) * multinomial_mpm(integer_tuple[:-1])
-
-
-# memoize functions that enable previous function calls to be stored in a dictionary.
-# Provides improved performance when computationally expenesive evaluations are performed many times.
-def memoize(f):
-    """Creates a dictionary that stores all previous evaluations of a given function f
-
-    Args:
-        f: function
-
-    Returns:
-        dictionary of previous evaluations of f
-    """
-    memo = {}
-
-    def helper(x):
-        if x not in memo:
-            memo[x] = f(x)
-        return memo[x]
-
-    return helper
-
-
-def memoize_nargs(f):
-    """Same as memoize but for variable number of arguments"""
-    memo = {}
-
-    def helper(*nargs):
-        if nargs not in memo:
-            memo[nargs] = f(*nargs)
-        return memo[nargs]
-
-    return helper
-
-
-@memoize_nargs
-def multinomial_memo(rc, r0, r1):
-    return multinomial((rc, r0, r1))
-
-
-@memoize
-def exp_mpm_memo(a):
-    return mpm.exp(a)
-
-
-@memoize_nargs
-def power_mpm_memo(a, b):
-    return mpm.power(a, b)
-
-
-@memoize_nargs
-def hyp_memo(lamda, mu, k, r):
-    return sp.hyp1f1(lamda + r, mu + lamda + r, -k)
-
-
-@memoize_nargs
-def hyp_mpm_memo(lamda, mu, k, r):
-    return mpm.hyp1f1(lamda + r, mu + lamda + r, -k)
-
-
-@memoize_nargs
-def fracrise_mpm_memo(lamda, mu, r):
-    return fracrise_mpm(lamda, lamda + mu, r)
-
-
-@memoize_nargs
-def fracrise_memo(lamda, mu, r):
-    return fracrise(lamda, lamda + mu, r)
 
 
 def analytic_twostate(parameter_list: list, max_mRNA_copy_number: int) -> list:
@@ -166,7 +48,7 @@ def analytic_twostate(parameter_list: list, max_mRNA_copy_number: int) -> list:
                 * mpm.hyp1f1(v12, v12 + v21 + r, K0 - K1)
                 / (mpm.factorial(n - r) * mpm.factorial(r))
             )
-            P[n] += mpmCalc * fracrise_mpm(v21, v21 + v12, r)
+            P[n] += mpmCalc * ut.fracrise_mpm(v21, v21 + v12, r)
 
     P = np.array([float(p) for p in P])
     return P / P.sum()
@@ -183,24 +65,23 @@ def analytic_telegraph(parameter_list: list, max_mRNA_copy_number: int) -> list:
         probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
     """
 
-    v12, v21, K = parameter_list
-    P = np.zeros(max_mRNA_copy_number)
+    v12, v21, c = parameter_list
+    prob_dist = np.zeros(max_mRNA_copy_number)
 
     a = v12
     b = v12 + v21
-    c = K
 
     for n in range(max_mRNA_copy_number):
-        P[n] = c ** n * sp.hyp1f1(a + n, b + n, -c) / math.factorial(n)
-        if np.isinf(P[n]):  # Use Stirling's approximation for n!
-            P[n] = (
+        prob_dist[n] = c ** n * sp.hyp1f1(a + n, b + n, -c) / math.factorial(n)
+        if np.isinf(prob_dist[n]):  # Use Stirling's approximation for n!
+            prob_dist[n] = (
                 sp.hyp1f1(a + n, b + n, -c)
                 * (c * np.exp(1) / n) ** n
                 / np.sqrt(2 * n * math.pi)
             )
-        P[n] *= fracrise(a, b, n - 1)
+        prob_dist[n] *= ut.fracrise(a, b, n - 1)
 
-    return P / P.sum()
+    return prob_dist / prob_dist.sum()
 
 
 def analytic_twotwo(parameter_list: list, max_mRNA_copy_number: int) -> list:
@@ -214,21 +95,9 @@ def analytic_twotwo(parameter_list: list, max_mRNA_copy_number: int) -> list:
         probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
     """
 
-    return np.array([twotwo_n(parameter_list, n) for n in range(0, max_mRNA_copy_number)])
-
-
-def analytic_twothree(parameter_list: list, max_mRNA_copy_number: int) -> list:
-    """Analytic solution to the 2^3 multistate model.
-
-    Args:
-        parameter_list: list of the ten rate parameters: lamda0,mu0,lamda1,mu1,lamda2,mu2, KB,k0,k1,k2.
-        max_mRNA_copy_number: maximal mRNA copy number.
-
-    Returns
-        probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
-     """
-
-    return [twothree_n(parameter_list, n) for n in range(0, max_mRNA_copy_number)]
+    return np.array(
+        [twotwo_n(parameter_list, n) for n in range(0, max_mRNA_copy_number)]
+    )
 
 
 def twotwo_n(parameter_list: list, mRNA_copy_number: int) -> float:
@@ -244,28 +113,40 @@ def twotwo_n(parameter_list: list, mRNA_copy_number: int) -> float:
 
     # Set up the parameters
     lamda0, mu0, lamda1, mu1, KB, k0, k1 = parameter_list
-    k0A, k1A = KB, k0 + KB
-    k0B, k1B = 0, k1
     n = mRNA_copy_number
 
     # Form list of all possible r_i combinations
     r_combinations = [(i, j, n - i - j) for i in range(n + 1) for j in range(n + 1 - i)]
 
-    p = 0
+    prob = 0
     for rc, r0, r1 in r_combinations:
-        p += (
-            multinomial_memo(rc, r0, r1)
+        prob += (
+            ut.multinomial_memo(rc, r0, r1)
             * KB ** rc
             * np.exp(-KB)
             * k0 ** r0
-            * fracrise_memo(lamda0, mu0, r0)
-            * hyp_memo(lamda0, mu0, k0, r0)
+            * ut.fracrise_memo(lamda0, mu0, r0)
+            * ut.hyp_memo(lamda0, mu0, k0, r0)
             * k1 ** r1
-            * fracrise_memo(lamda1, mu1, r1)
-            * hyp_memo(lamda1, mu1, k1, r1)
+            * ut.fracrise_memo(lamda1, mu1, r1)
+            * ut.hyp_memo(lamda1, mu1, k1, r1)
         )
 
-    return p / math.factorial(n)
+    return prob / math.factorial(n)
+
+
+def analytic_twothree(parameter_list: list, max_mRNA_copy_number: int) -> list:
+    """Analytic solution to the 2^3 multistate model.
+
+    Args:
+        parameter_list: list of the ten rate parameters: lamda0,mu0,lamda1,mu1,lamda2,mu2, KB,k0,k1,k2.
+        max_mRNA_copy_number: maximal mRNA copy number.
+
+    Returns
+        probability distribution for mRNa copy numbers n=0:(max_mRNA_copy_number-1).
+    """
+
+    return [twothree_n(parameter_list, n) for n in range(0, max_mRNA_copy_number)]
 
 
 def twothree_n(parameters: list, mRNA_copy_number: int) -> list:
@@ -281,9 +162,9 @@ def twothree_n(parameters: list, mRNA_copy_number: int) -> list:
 
     # Set up the parameters
     lamda0, mu0, lamda1, mu1, lamda2, mu2, KB, k0, k1, k2 = parameters
-    k0A, k1A = mpm.mpf(KB), mpm.mpf(k0 + KB)
-    k0B, k1B = mpm.mpf(0), mpm.mpf(k1)
-    k0C, k1C = mpm.mpf(0), mpm.mpf(k2)
+    # k0A, k1A = mpm.mpf(KB), mpm.mpf(k0 + KB)
+    # k0B, k1B = mpm.mpf(0), mpm.mpf(k1)
+    # k0C, k1C = mpm.mpf(0), mpm.mpf(k2)
     n = mRNA_copy_number
 
     # Obtain list of all possible combinations of r_i
@@ -294,24 +175,24 @@ def twothree_n(parameters: list, mRNA_copy_number: int) -> list:
         for k in range(n + 1 - i - j)
     ]
 
-    p = mpm.mpf(0)
+    prob = mpm.mpf(0)
     for rc, r0, r1, r2 in r_combinations:
-        p += (
-            multinomial_mpm(r_combinations)
-            * power_mpm_memo(KB, rc)
-            * exp_mpm_memo(-KB)
-            * power_mpm_memo(k0, r0)
-            * fracrise_mpm_memo(lamda0, mu0, r0)
-            * hyp_mpm_memo(lamda0, mu0, k0, r0)
-            * power_mpm_memo(k1, r1)
-            * fracrise_mpm_memo(lamda1, mu1, r1)
-            * hyp_mpm_memo(lamda1, mu1, k1, r1)
-            * power_mpm_memo(k2, r2)
-            * fracrise_mpm_memo(lamda2, mu2, r2)
-            * hyp_mpm_memo(lamda2, mu2, k2, r2)
+        prob += (
+            ut.multinomial_mpm((rc, r0, r1, r2))
+            * ut.power_mpm_memo(KB, rc)
+            * ut.exp_mpm_memo(-KB)
+            * ut.power_mpm_memo(k0, r0)
+            * ut.fracrise_mpm_memo(lamda0, mu0, r0)
+            * ut.hyp_mpm_memo(lamda0, mu0, k0, r0)
+            * ut.power_mpm_memo(k1, r1)
+            * ut.fracrise_mpm_memo(lamda1, mu1, r1)
+            * ut.hyp_mpm_memo(lamda1, mu1, k1, r1)
+            * ut.power_mpm_memo(k2, r2)
+            * ut.fracrise_mpm_memo(lamda2, mu2, r2)
+            * ut.hyp_mpm_memo(lamda2, mu2, k2, r2)
         )
 
-    return p / mpm.factorial(n)
+    return prob / mpm.factorial(n)
 
 
 def analytic_feedback(parameters: list, max_mRNA_copy_number: int) -> list:
@@ -336,39 +217,40 @@ def analytic_feedback(parameters: list, max_mRNA_copy_number: int) -> list:
     w0 = -R / (Sb ** 2)
 
     def P1(n):
-        p = 0.0
+        prob = 0.0
         for m in range(n + 1):
-            p += (
+            prob += (
                 sp.comb(n, m)
                 * rb ** (n - m)
                 * (R / Sb) ** m
-                * fracrise(a, b, m)
+                * ut.fracrise(a, b, m)
                 * sp.hyp1f1(a + m, b + m, w0)
             )
 
-        return p / math.factorial(n)
+        return prob / math.factorial(n)
 
     def P0(n):
-        p = 0.0
+        prob = 0.0
         for m in range(n):
-            p += (
+            prob += (
                 sp.comb(n - 1, m)
                 * rb ** (n - 1 - m)
                 * (R / Sb) ** m
-                * fracrise(a, b, m)
+                * ut.fracrise(a, b, m)
                 * (
                     Sb * (m + a) * sp.hyp1f1(a + m + 1, b + m, w0) / (Sb - 1)
                     - (m + a + su * rb / R) * sp.hyp1f1(a + m, b + m, w0)
                 )
             )
 
-        return p / math.factorial(n)
+        return prob / math.factorial(n)
 
     # Evaluate P then normalise
     p00 = (
         Sb * a * sp.hyp1f1(a + 1, b, w0) / ru / (Sb - 1) - su * sp.hyp1f1(a, b, w0) / R
     )
 
-    P = [P1(n) + P0(n) for n in range(1, max_mRNA_copy_number)]
-    P.insert(0, p00 + P1(0))
-    return P / sum(P)
+    prob_dist = [P1(n) + P0(n) for n in range(1, max_mRNA_copy_number)]
+    prob_dist.insert(0, p00 + P1(0))
+    prob_dist = prob_dist / sum(prob_dist)
+    return prob_dist
