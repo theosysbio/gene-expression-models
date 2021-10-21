@@ -1,5 +1,13 @@
 """
 Functions for evaluating the recurrence relations
+
+Functions available for evaluatind recurrence relations for different models:
+    - recurrence_two_switch
+    - recurrence_three_switch
+    - recurrence_feedback
+
+Generate distribution from recurrence terms:
+    - invgenfunc
 """
 
 import math
