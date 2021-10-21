@@ -2,7 +2,6 @@ certifi
 cycler
 kiwisolver
 matplotlib
-mkl-service
 mpmath
 numpy
 pyparsing
