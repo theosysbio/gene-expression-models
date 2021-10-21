@@ -47,21 +47,10 @@ def solve_compound(
     nTheta = 200
 
     # Set up the parameter distribution
-    m, s = parameter_list[index_compound_parameter], std_of_compound_dist
-    if compounding_distribution == "normal":
-        a, b = (0 - m) / s, 10000
-        dist = st.truncnorm(a, b, m, s)
-    elif compounding_distribution == "gamma":
-        theta = s ** 2 / m
-        k = (m / s) ** 2
-        dist = st.gamma(k, scale=theta)
-    elif compounding_distribution == "lognormal":
-        mu = np.log(m / np.sqrt(1 + (s / m) ** 2))
-        sg = np.sqrt(np.log(1 + (s / m) ** 2))
-        dist = st.lognorm(s=sg, scale=np.exp(mu))
-    else:
-        print("Invalid distribution selected")
-        return
+
+    dist = set_up_parameter_distribution(
+        parameter_list, index_compound_parameter, std_of_compound_dist, compounding_distribution
+    )
 
     # Set up parameter vector
     thetMax = dist.ppf(cdfMax)
@@ -80,9 +69,9 @@ def solve_compound(
     for thet in thetVec:
         parMod[index_compound_parameter] = thet
         if compound_over_recurrence_terms:
-            P += np.array(sol_func(parMod, max_mRNA_copy_number, precision=decimal_precision)) * Decimal(
-                dist.pdf(thet)
-            )
+            P += np.array(
+                sol_func(parMod, max_mRNA_copy_number, precision=decimal_precision)
+            ) * Decimal(dist.pdf(thet))
         else:
             P += sol_func(parMod, max_mRNA_copy_number) * dist.pdf(thet)
 
@@ -110,7 +99,7 @@ def solve_compound_rec(
         std_of_compound_dist: standard deviation of the compounding distribution
         max_mRNA_copy_number: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
         recursion_length: recursion length. The number of terms evaluated recursively
-        parIdx: index of the parameter over which the solution is compunded
+        index_compound_parameter: index of the parameter over which the solution is compunded
         compounding_distribution: string specifying the type of compounding distribution
         decimal_precision: integer specifying the precision used by the Decimal class
 
@@ -123,6 +112,35 @@ def solve_compound_rec(
 
     assert compounding_distribution in ["normal", "lognormal", "gamma"]
 
-    H = solve_compound(recurrence_func, parameter_list, std_of_compound_dist, recursion_length, index_compound_parameter, compounding_distribution,
-                       compound_over_recurrence_terms=True, decimal_precision=decimal_precision)
-    return [invgenfunc(H, n, precision=decimal_precision) for n in range(0, max_mRNA_copy_number)]
+    H = solve_compound(
+        recurrence_func,
+        parameter_list,
+        std_of_compound_dist,
+        recursion_length,
+        index_compound_parameter,
+        compounding_distribution,
+        compound_over_recurrence_terms=True,
+        decimal_precision=decimal_precision,
+    )
+    return [
+        invgenfunc(H, n, precision=decimal_precision)
+        for n in range(0, max_mRNA_copy_number)
+    ]
+
+
+
+def set_up_parameter_distribution(parameter_list, index_compound_parameter, std_of_compound_dist, compounding_distribution):
+    m, s = parameter_list[index_compound_parameter], std_of_compound_dist
+    dist = None
+    if compounding_distribution == "normal":
+        a, b = (0 - m) / s, 10000
+        dist = st.truncnorm(a, b, m, s)
+    elif compounding_distribution == "gamma":
+        theta = s ** 2 / m
+        k = (m / s) ** 2
+        dist = st.gamma(k, scale=theta)
+    elif compounding_distribution == "lognormal":
+        mu = np.log(m / np.sqrt(1 + (s / m) ** 2))
+        sg = np.sqrt(np.log(1 + (s / m) ** 2))
+        dist = st.lognorm(s=sg, scale=np.exp(mu))
+    return dist
