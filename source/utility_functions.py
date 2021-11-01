@@ -7,6 +7,7 @@ Implemented functions
     - multinomial
     - multinomial_mpm: high-precision version of multinomial
 """
+from typing import Callable
 
 import mpmath as mpm
 import scipy.special as sp
@@ -76,7 +77,7 @@ def multinomial_mpm(integer_combinations: tuple) -> float:
 
 # memoize functions that enable previous function calls to be stored in a dictionary.
 # Provides improved performance when computationally expenesive evaluations are performed many times.
-def memoize(f):
+def memoize(f: Callable):
     """Creates a dictionary that stores all previous evaluations of a given function f
 
     Args:
@@ -95,7 +96,7 @@ def memoize(f):
     return helper
 
 
-def memoize_nargs(f):
+def memoize_nargs(f: Callable):
     """Same as memoize but for variable number of arguments"""
     memo = {}
 

@@ -3,13 +3,14 @@ Implement finite state projection algorithm
 """
 
 from time import perf_counter as pc
+from typing import List
 
 import numpy as np
 import scipy.sparse as sps
 from scipy.linalg import null_space
 
 
-def fsp_twostate(parameter_list: list, max_mRNA_copy_number: int) -> list:
+def fsp_twostate(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
     """Steady-state distribution for a two-state model evaluated using the FSP.
 
     Args:
@@ -55,7 +56,7 @@ def fsp_twostate(parameter_list: list, max_mRNA_copy_number: int) -> list:
     return P  # , matrix_time, null_time
 
 
-def fsp_threestate(parameter_list: list, max_mRNA_copy_number: int) -> list:
+def fsp_threestate(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
     """Steady state distribution for a three-state model evaluated using the FSP.
 
     Args:

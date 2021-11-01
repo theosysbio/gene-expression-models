@@ -12,6 +12,7 @@ Generate distribution from recurrence terms:
 
 import math
 from decimal import Decimal, getcontext
+from typing import List
 
 import mpmath as mpm
 import numpy as np
@@ -19,13 +20,14 @@ import numpy as np
 dfltPrec = 50  # Default precision for Decimal class
 
 
-def recurrence_two_switch(prms: list, N: int, M: int, precision: int = dfltPrec) -> list:
+def recurrence_two_switch(parameter_list: List[float], N: int, M: int, precision: int = dfltPrec) -> List[float]:
     """Compute prodability distribution for two-state leaky gene model via recurrence method.
 
-    First calculates recurrence terms using recurrence_step_two_switch() and subsequently the distribution using invgenfunc()
+    First calculates recurrence terms using recurrence_step_two_switch() and subsequently the distribution using
+    invgenfunc()
 
     Args:
-        prms: list of the four rate parameters: v12,v21,K1,K2
+        parameter_list: list of the four rate parameters: v12,v21,K1,K2
         N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
         M: number of terms evaluated by the recursion relation
         precision: numerical precision used by the Decimal class
@@ -34,32 +36,15 @@ def recurrence_two_switch(prms: list, N: int, M: int, precision: int = dfltPrec)
         probability distribution for mRNa copy numbers n=0:N-1.
     """
 
-    G = recurrence_step_two_switch(prms, M, precision)
+    G = recurrence_step_two_switch(parameter_list, M, precision)
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
-def recurrence_three_switch(prms: list, N: int, M: int, precision: int = dfltPrec) -> list:
+def recurrence_three_switch(parameter_list: List[float], N: int, M: int, precision: int = dfltPrec) -> List[float]:
     """Compute prodability distribution for three-state leaky gene model via recurrence method.
 
     Args:
-        prms: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
-        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
-        ML number of terms evaluated by the recursion relation
-        precision: numerical precision used by the Decimal class
-
-    Returns:
-        probability distribution for mRNa copy numbers n=0:N-1.
-    """
-
-    G = recurrence_step_three_switch(prms, M, precision)
-    return [invgenfunc(G, n, precision) for n in range(0, N)]
-
-
-def recurrence_feedback(parameters: list, N: int, M: int, precision: int = dfltPrec):
-    """Compute prodability distribution for feedback model via recurrence method.
-
-    Args:
-        parameters: list of the five rate parameters: ru, rb, th, su, sb
+        parameter_list: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
         N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
         M: number of terms evaluated by the recursion relation
         precision: numerical precision used by the Decimal class
@@ -68,7 +53,24 @@ def recurrence_feedback(parameters: list, N: int, M: int, precision: int = dfltP
         probability distribution for mRNa copy numbers n=0:N-1.
     """
 
-    G = recurrence_step_feedback(parameters, M, precision)
+    G = recurrence_step_three_switch(parameter_list, M, precision)
+    return [invgenfunc(G, n, precision) for n in range(0, N)]
+
+
+def recurrence_feedback(parameter_list: List[float], N: int, M: int, precision: int = dfltPrec):
+    """Compute prodability distribution for feedback model via recurrence method.
+
+    Args:
+        parameter_list: list of the five rate parameters: ru, rb, th, su, sb
+        N: maximal mRNA copy number. The distribution is evaluated for n=0:N-1
+        M: number of terms evaluated by the recursion relation
+        precision: numerical precision used by the Decimal class
+
+    Returns:
+        probability distribution for mRNa copy numbers n=0:N-1.
+    """
+
+    G = recurrence_step_feedback(parameter_list, M, precision)
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
@@ -104,11 +106,11 @@ def invgenfunc(G: list, n: int, precision: int = dfltPrec):
     return s / Decimal(math.factorial(n))
 
 
-def recurrence_step_two_switch(prms: list, M: int, precision: int = dfltPrec):
+def recurrence_step_two_switch(parameter_list: list, M: int, precision: int = dfltPrec):
     """Compute recurrence terms for leaky gene model.
 
     Args:
-        prms: list of the four rate parameters: v12,v21,K1,K2
+        parameter_list: list of the four rate parameters: v12,v21,K1,K2
         M: number of terms evaluated by the recursion relation
         precision: numerical precision used by the Decimal class
 
@@ -119,10 +121,10 @@ def recurrence_step_two_switch(prms: list, M: int, precision: int = dfltPrec):
     getcontext().prec = precision
 
     # Set up parameters
-    lam = Decimal(prms[0])
-    v = Decimal(prms[1])
-    K_I = Decimal(prms[2])
-    K_A = Decimal(prms[3])
+    lam = Decimal(parameter_list[0])
+    v = Decimal(parameter_list[1])
+    K_I = Decimal(parameter_list[2])
+    K_A = Decimal(parameter_list[3])
 
     def gg0(n, x, y):  # calculate interates for g_0
         a = (((n + v) * (n + lam)) / v) - lam
@@ -148,11 +150,11 @@ def recurrence_step_two_switch(prms: list, M: int, precision: int = dfltPrec):
     return G
 
 
-def recurrence_step_three_switch(prms: list, M: int, precision: int = dfltPrec) -> list:
+def recurrence_step_three_switch(parameter_list: list, M: int, precision: int = dfltPrec) -> list:
     """Compute recurrence terms for three-state leaky gene model.
 
     Arguments:
-        prms: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
+        parameter_list: list of the nine rate parameters: v12,v13,v21,v23,v31,v32,k1,k2,k3
         M: number of terms evaluated by the recursion relation
         precision: numerical precision used by the Decimal class
 
@@ -162,7 +164,7 @@ def recurrence_step_three_switch(prms: list, M: int, precision: int = dfltPrec) 
 
     getcontext().prec = precision
 
-    def d(n: float) -> float:
+    def d(n: Decimal) -> Decimal:
         return (
             n ** Decimal(2)
             + n * (v12 + v13 + v21 + v23 + v31 + v32)
@@ -172,7 +174,7 @@ def recurrence_step_three_switch(prms: list, M: int, precision: int = dfltPrec) 
             + v23 * v31
         )
 
-    def update(nn: int, ss: float) -> float:
+    def update(nn: int, ss: list) -> list:
         n = Decimal(nn)
         up = [None] * 3
         for i in range(3):
@@ -211,26 +213,26 @@ def recurrence_step_three_switch(prms: list, M: int, precision: int = dfltPrec) 
         return up
 
     # Set up parameters
-    v12 = Decimal(prms[0])
-    v13 = Decimal(prms[1])
-    v21 = Decimal(prms[2])
-    v23 = Decimal(prms[3])
-    v31 = Decimal(prms[4])
-    v32 = Decimal(prms[5])
-    k1 = Decimal(prms[6])
-    k2 = Decimal(prms[7])
-    k3 = Decimal(prms[8])
+    v12 = Decimal(parameter_list[0])
+    v13 = Decimal(parameter_list[1])
+    v21 = Decimal(parameter_list[2])
+    v23 = Decimal(parameter_list[3])
+    v31 = Decimal(parameter_list[4])
+    v32 = Decimal(parameter_list[5])
+    k1 = Decimal(parameter_list[6])
+    k2 = Decimal(parameter_list[7])
+    k3 = Decimal(parameter_list[8])
 
     vvec = np.array([[0, v12, v13], [v21, 0, v23], [v31, v32, 0]])
     kvec = [k1, k2, k3]
 
     ini = [
         (vvec[1, 0] * vvec[2, 0] + vvec[1, 2] * vvec[2, 0] + vvec[1, 0] * vvec[2, 1])
-        / d(0),
+        / d(Decimal(0)),
         (vvec[0, 1] * vvec[2, 0] + vvec[0, 1] * vvec[2, 1] + vvec[0, 2] * vvec[2, 1])
-        / d(0),
+        / d(Decimal(0)),
         (vvec[0, 2] * vvec[1, 0] + vvec[0, 1] * vvec[1, 2] + vvec[0, 2] * vvec[1, 2])
-        / d(0),
+        / d(Decimal(0)),
     ]
 
     SS = [ini]
@@ -243,11 +245,11 @@ def recurrence_step_three_switch(prms: list, M: int, precision: int = dfltPrec) 
     return G
 
 
-def recurrence_step_feedback(prms: list, M: int, precision: int = 500) -> list:
+def recurrence_step_feedback(parameter_list: list, M: int, precision: int = 500) -> list:
     """Compute recurrence terms for feedback model.
 
     Arguments:
-        prms: list of the five rate parameters: ru, rb, th, su, sb
+        parameter_list: list of the five rate parameters: ru, rb, th, su, sb
         M: number of terms evaluated by the recursion relation
         precision: decimal precision used by the mpmath mpf type
 
@@ -274,11 +276,11 @@ def recurrence_step_feedback(prms: list, M: int, precision: int = 500) -> list:
         return [u1, u2]
 
     # Set up parameters
-    ru = mpm.mpf(prms[0])
-    rb = mpm.mpf(prms[1])
-    th = mpm.mpf(prms[2])
-    su = mpm.mpf(prms[3])
-    sb = mpm.mpf(prms[4])
+    ru = mpm.mpf(parameter_list[0])
+    rb = mpm.mpf(parameter_list[1])
+    th = mpm.mpf(parameter_list[2])
+    su = mpm.mpf(parameter_list[3])
+    sb = mpm.mpf(parameter_list[4])
 
     Sb = mpm.mpf(1) + sb
     Rr = ru - rb * Sb

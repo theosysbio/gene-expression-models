@@ -14,9 +14,9 @@ sys.path.insert(
 import analytic as an
 
 # Plot the leaky Telegraph model
-prms = [0.1, 0.1, 50.0, 5.0]
+parameter_list = [0.1, 0.1, 50.0, 5.0]
 print("Calculating two-state")
-p_analytic = an.analytic_twostate(prms, 80)
+p_analytic = an.analytic_twostate(parameter_list, 80)
 fig = plt.figure()
 fig.suptitle("Leaky Telegraph Model")
 plt.plot(p_analytic)
@@ -26,9 +26,9 @@ plt.savefig("Analytic_TwoState.pdf", format="pdf")
 
 # Plot the 2^2-multistate model as featured in Figure 5(b)
 plt.clf()
-prms = [0.01, 0.01, 0.01, 0.01, 5.0, 16.0, 28.0]
+parameter_list = [0.01, 0.01, 0.01, 0.01, 5.0, 16.0, 28.0]
 print("Calculating four-state")
-p_analytic = an.analytic_twotwo(prms, 100)
+p_analytic = an.analytic_twotwo(parameter_list, 100)
 fig = plt.figure()
 fig.suptitle(r"$2^2$-Multistate Model")
 plt.plot(p_analytic)
@@ -40,9 +40,9 @@ plt.savefig("Analytic_FourState.pdf", format="pdf")
 # Uncomment this to solve example for 2^3 state model - takes several hours to run
 # # Plot the 2^3 state model as featured in Figure 6 (b)
 # plt.clf()
-# prms = [0.01,0.01,0.01,0.01,0.01,0.01, 5.,20.,65.,115.]
+# parameter_list = [0.01,0.01,0.01,0.01,0.01,0.01, 5.,20.,65.,115.]
 # print('Calculating eight-state. May take around 10 hours.')
-# p_analytic = an.analytic_twothree(prms, 250)
+# p_analytic = an.analytic_twothree(parameter_list, 250)
 # fig = plt.figure()
 # fig.suptitle(r'$2^3$-Multistate Model')
 # plt.plot(p_analytic)

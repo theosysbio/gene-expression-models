@@ -6,6 +6,7 @@ Function used to compute recurrence solution: solve_compound().
 
 from copy import deepcopy
 from decimal import Decimal
+from typing import Callable, List
 
 import numpy as np
 import scipy.stats as st
@@ -14,15 +15,15 @@ from recurrence import invgenfunc
 
 
 def solve_compound_rec(
-    recurrence_func,
-    parameter_list: list,
+    recurrence_func: Callable,
+    parameter_list: List[float],
     std_of_compound_dist: float,
     max_mRNA_copy_number: int,
     recursion_length: int,
     index_compound_parameter: int = 3,
     compounding_distribution: str = "normal",
     decimal_precision: int = 100,
-) -> list:
+) -> List[float]:
     """Compound distribution.
 
     Calls solve_compound() to obtain recurrence coefficients h_i and computes probability distribution using  invgenfunc()
@@ -63,15 +64,15 @@ def solve_compound_rec(
 
 
 def solve_compound(
-    sol_func,
-    parameter_list: list,
+    sol_func: Callable,
+    parameter_list: List[float],
     std_of_compound_dist: float,
     max_mRNA_copy_number: int,
     index_compound_parameter: int = 3,
     compounding_distribution: str = "normal",
     compound_over_recurrence_terms: bool = False,
     decimal_precision: int = 50,
-) -> list:
+) -> List[float]:
     """Obtain recursion coefficients h_i for compound distribution for model in sol_func.
 
     Args:
@@ -134,11 +135,11 @@ def solve_compound(
 
 
 def set_up_parameter_distribution(
-    parameter_list: list,
+    parameter_list: List[float],
     std_of_compound_dist: float,
     index_compound_parameter: int = 3,
     compounding_distribution: str = "normal",
-):
+) -> Callable:
     """Set up parameter distribution used needed in solve_compound()
 
     Args:

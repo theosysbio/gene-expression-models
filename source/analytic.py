@@ -9,6 +9,7 @@ Available functions:
 """
 
 import math
+from typing import List
 
 import mpmath as mpm
 import numpy as np
@@ -19,7 +20,7 @@ import utility_functions as ut
 mpm.mp.dps = 100  # Set precision for mpmath computations
 
 
-def analytic_twostate(parameter_list: list, max_mRNA_copy_number: int) -> list:
+def analytic_twostate(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
     """Analytic steady state distribution for a two-state model (leaky telegraph).
 
     Requires computation at high precision via mpm for accurate convergence of
@@ -54,7 +55,7 @@ def analytic_twostate(parameter_list: list, max_mRNA_copy_number: int) -> list:
     return P / P.sum()
 
 
-def analytic_telegraph(parameter_list: list, max_mRNA_copy_number: int) -> list:
+def analytic_telegraph(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
     """Analytic steady state distribution for the Telegraph model.
 
     Args:
@@ -84,7 +85,7 @@ def analytic_telegraph(parameter_list: list, max_mRNA_copy_number: int) -> list:
     return prob_dist / prob_dist.sum()
 
 
-def analytic_twotwo(parameter_list: list, max_mRNA_copy_number: int) -> list:
+def analytic_twotwo(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
     """Analytic solution to the 2^2 multistate model.
 
     Args:
@@ -100,7 +101,7 @@ def analytic_twotwo(parameter_list: list, max_mRNA_copy_number: int) -> list:
     )
 
 
-def twotwo_n(parameter_list: list, mRNA_copy_number: int) -> float:
+def twotwo_n(parameter_list: List[float], mRNA_copy_number: int) -> float:
     """Analytic solution to the 2^2 multistate model for a single copy number n.
 
     Args:
@@ -135,7 +136,7 @@ def twotwo_n(parameter_list: list, mRNA_copy_number: int) -> float:
     return prob / math.factorial(n)
 
 
-def analytic_twothree(parameter_list: list, max_mRNA_copy_number: int) -> list:
+def analytic_twothree(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
     """Analytic solution to the 2^3 multistate model.
 
     Args:
@@ -149,11 +150,11 @@ def analytic_twothree(parameter_list: list, max_mRNA_copy_number: int) -> list:
     return [twothree_n(parameter_list, n) for n in range(0, max_mRNA_copy_number)]
 
 
-def twothree_n(parameters: list, mRNA_copy_number: int) -> list:
+def twothree_n(parameter_list: List[float], mRNA_copy_number: int) -> float:
     """Analytic solution to the 2^3 multistate model for a single copy number n.
 
     Args:
-        parameters: list of the ten rate parameters: lamda0,mu0,lamda1,mu1,lamda2,mu2, KB,k0,k1,k2
+        parameter_list: list of the ten rate parameters: lamda0,mu0,lamda1,mu1,lamda2,mu2, KB,k0,k1,k2
         mRNA_copy_number: copy number at which the distribution is evaluated.
 
     Returns:
@@ -161,7 +162,7 @@ def twothree_n(parameters: list, mRNA_copy_number: int) -> list:
     """
 
     # Set up the parameters
-    lamda0, mu0, lamda1, mu1, lamda2, mu2, KB, k0, k1, k2 = parameters
+    lamda0, mu0, lamda1, mu1, lamda2, mu2, KB, k0, k1, k2 = parameter_list
     n = mRNA_copy_number
 
     # Obtain list of all possible combinations of r_i
@@ -192,13 +193,13 @@ def twothree_n(parameters: list, mRNA_copy_number: int) -> list:
     return prob / mpm.factorial(n)
 
 
-def analytic_feedback(parameters: list, max_mRNA_copy_number: int) -> list:
+def analytic_feedback(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
     """Analytic solution to the feedback model.
 
     Solution originally published in Grima et al, JCP 137, 035104 (2012)
 
     Args:
-        parameters: list of the five rate parameters: ru, rb, th, su, sb
+        parameter_list: list of the five rate parameter_list: ru, rb, th, su, sb
         max_mRNA_copy_number: maximal mRNA copy number.
 
     Returns
@@ -206,7 +207,7 @@ def analytic_feedback(parameters: list, max_mRNA_copy_number: int) -> list:
     """
 
     # Define some useful values
-    ru, rb, th, su, sb = parameters
+    ru, rb, th, su, sb = parameter_list
     Sb = 1 + sb
     R = ru - rb * Sb
     a = th + su * (ru - rb) / R

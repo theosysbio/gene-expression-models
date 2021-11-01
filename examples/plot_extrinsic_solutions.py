@@ -64,29 +64,29 @@ axin.set_xlabel(r"$n$")
 axin.set_ylabel(r"$p(n)$")
 plt.savefig("Compound_ThreeState.pdf", format="pdf")
 
-# 2^2 state model with extrinsic noise as features in Figure 9 (a)
-prms = [0.01, 0.01, 0.01, 0.01, 5, 16, 28]
-kstd = 10.0
-N = 100
-print("Calculating compound four-state")
-P = an.analytic_twotwo(prms, N)
-Q = ext.solve_compound(
-    an.analytic_twotwo, prms, kstd, N, index_compound_parameter=6, compounding_distribution="lognormal"
-)
-
-plt.clf()
-fig, ax = plt.subplots()
-fig.suptitle(r"Compound $2^2$ state model")
-ax.plot(range(N), P, label=r"No noise", linestyle="--", color="black")
-ax.plot(range(N), Q, label=r"Compound")
-ax.legend(loc="lower right")
-ax.set_xlabel(r"Copy no., $n$")
-ax.set_ylabel(r"Probability distribution, $p(n)$")
-
-axin = ax.inset_axes([0.5, 0.4, 0.45, 0.55])
-axin.semilogy(range(N), P, linestyle="--", color="black")
-axin.semilogy(range(N), Q)
-axin.set_xlim(50, N)
-axin.set_xlabel(r"$n$")
-axin.set_ylabel(r"$p(n)$")
-plt.savefig("Compound_FourState.pdf", format="pdf")
+# # 2^2 state model with extrinsic noise as features in Figure 9 (a)
+# prms = [0.01, 0.01, 0.01, 0.01, 5, 16, 28]
+# kstd = 10.0
+# N = 100
+# print("Calculating compound four-state")
+# P = an.analytic_twotwo(prms, N)
+# Q = ext.solve_compound(
+#     an.analytic_twotwo, prms, kstd, N, index_compound_parameter=6, compounding_distribution="lognormal"
+# )
+#
+# plt.clf()
+# fig, ax = plt.subplots()
+# fig.suptitle(r"Compound $2^2$ state model")
+# ax.plot(range(N), P, label=r"No noise", linestyle="--", color="black")
+# ax.plot(range(N), Q, label=r"Compound")
+# ax.legend(loc="lower right")
+# ax.set_xlabel(r"Copy no., $n$")
+# ax.set_ylabel(r"Probability distribution, $p(n)$")
+#
+# axin = ax.inset_axes([0.5, 0.4, 0.45, 0.55])
+# axin.semilogy(range(N), P, linestyle="--", color="black")
+# axin.semilogy(range(N), Q)
+# axin.set_xlim(50, N)
+# axin.set_xlabel(r"$n$")
+# axin.set_ylabel(r"$p(n)$")
+# plt.savefig("Compound_FourState.pdf", format="pdf")
