@@ -26,7 +26,9 @@ def fsp_twostate(parameter_list: List[float], max_mRNA_copy_number: int) -> List
     A = np.array([[-v12, v21], [v12, -v21]])
     T = np.diag([k1, k2])
     D = np.eye(2)
-    AG = sps.lil_matrix((2 * max_mRNA_copy_number, 2 * max_mRNA_copy_number), dtype=np.float64)
+    AG = sps.lil_matrix(
+        (2 * max_mRNA_copy_number, 2 * max_mRNA_copy_number), dtype=np.float64
+    )
 
     for i in range(1, max_mRNA_copy_number + 1):
         if i < max_mRNA_copy_number:
@@ -56,7 +58,9 @@ def fsp_twostate(parameter_list: List[float], max_mRNA_copy_number: int) -> List
     return P  # , matrix_time, null_time
 
 
-def fsp_threestate(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
+def fsp_threestate(
+    parameter_list: List[float], max_mRNA_copy_number: int
+) -> List[float]:
     """Steady state distribution for a three-state model evaluated using the FSP.
 
     Args:
@@ -73,7 +77,9 @@ def fsp_threestate(parameter_list: List[float], max_mRNA_copy_number: int) -> Li
     )
     T = np.diag([k1, k2, k3])
     D = np.eye(3)
-    AG = sps.lil_matrix((3 * max_mRNA_copy_number, 3 * max_mRNA_copy_number), dtype=np.float64)
+    AG = sps.lil_matrix(
+        (3 * max_mRNA_copy_number, 3 * max_mRNA_copy_number), dtype=np.float64
+    )
 
     for i in range(1, max_mRNA_copy_number + 1):
         if i < max_mRNA_copy_number:

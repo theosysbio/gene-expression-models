@@ -20,7 +20,9 @@ import numpy as np
 dfltPrec = 50  # Default precision for Decimal class
 
 
-def recurrence_two_switch(parameter_list: List[float], N: int, M: int, precision: int = dfltPrec) -> List[float]:
+def recurrence_two_switch(
+    parameter_list: List[float], N: int, M: int, precision: int = dfltPrec
+) -> List[float]:
     """Compute prodability distribution for two-state leaky gene model via recurrence method.
 
     First calculates recurrence terms using recurrence_step_two_switch() and subsequently the distribution using
@@ -40,7 +42,9 @@ def recurrence_two_switch(parameter_list: List[float], N: int, M: int, precision
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
-def recurrence_three_switch(parameter_list: List[float], N: int, M: int, precision: int = dfltPrec) -> List[float]:
+def recurrence_three_switch(
+    parameter_list: List[float], N: int, M: int, precision: int = dfltPrec
+) -> List[float]:
     """Compute prodability distribution for three-state leaky gene model via recurrence method.
 
     Args:
@@ -57,7 +61,9 @@ def recurrence_three_switch(parameter_list: List[float], N: int, M: int, precisi
     return [invgenfunc(G, n, precision) for n in range(0, N)]
 
 
-def recurrence_feedback(parameter_list: List[float], N: int, M: int, precision: int = dfltPrec):
+def recurrence_feedback(
+    parameter_list: List[float], N: int, M: int, precision: int = dfltPrec
+):
     """Compute prodability distribution for feedback model via recurrence method.
 
     Args:
@@ -150,7 +156,9 @@ def recurrence_step_two_switch(parameter_list: list, M: int, precision: int = df
     return G
 
 
-def recurrence_step_three_switch(parameter_list: list, M: int, precision: int = dfltPrec) -> list:
+def recurrence_step_three_switch(
+    parameter_list: list, M: int, precision: int = dfltPrec
+) -> list:
     """Compute recurrence terms for three-state leaky gene model.
 
     Arguments:
@@ -245,7 +253,9 @@ def recurrence_step_three_switch(parameter_list: list, M: int, precision: int = 
     return G
 
 
-def recurrence_step_feedback(parameter_list: list, M: int, precision: int = 500) -> list:
+def recurrence_step_feedback(
+    parameter_list: list, M: int, precision: int = 500
+) -> list:
     """Compute recurrence terms for feedback model.
 
     Arguments:

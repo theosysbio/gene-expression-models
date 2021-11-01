@@ -3,6 +3,7 @@ Plot analytic solutions of a few example systems
 """
 
 import matplotlib.pyplot as plt
+
 plt.style.use("seaborn-whitegrid")
 
 import sys

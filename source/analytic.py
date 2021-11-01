@@ -20,7 +20,9 @@ import utility_functions as ut
 mpm.mp.dps = 100  # Set precision for mpmath computations
 
 
-def analytic_twostate(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
+def analytic_twostate(
+    parameter_list: List[float], max_mRNA_copy_number: int
+) -> List[float]:
     """Analytic steady state distribution for a two-state model (leaky telegraph).
 
     Requires computation at high precision via mpm for accurate convergence of
@@ -55,7 +57,9 @@ def analytic_twostate(parameter_list: List[float], max_mRNA_copy_number: int) ->
     return P / P.sum()
 
 
-def analytic_telegraph(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
+def analytic_telegraph(
+    parameter_list: List[float], max_mRNA_copy_number: int
+) -> List[float]:
     """Analytic steady state distribution for the Telegraph model.
 
     Args:
@@ -85,7 +89,9 @@ def analytic_telegraph(parameter_list: List[float], max_mRNA_copy_number: int) -
     return prob_dist / prob_dist.sum()
 
 
-def analytic_twotwo(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
+def analytic_twotwo(
+    parameter_list: List[float], max_mRNA_copy_number: int
+) -> List[float]:
     """Analytic solution to the 2^2 multistate model.
 
     Args:
@@ -136,7 +142,9 @@ def twotwo_n(parameter_list: List[float], mRNA_copy_number: int) -> float:
     return prob / math.factorial(n)
 
 
-def analytic_twothree(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
+def analytic_twothree(
+    parameter_list: List[float], max_mRNA_copy_number: int
+) -> List[float]:
     """Analytic solution to the 2^3 multistate model.
 
     Args:
@@ -193,7 +201,9 @@ def twothree_n(parameter_list: List[float], mRNA_copy_number: int) -> float:
     return prob / mpm.factorial(n)
 
 
-def analytic_feedback(parameter_list: List[float], max_mRNA_copy_number: int) -> List[float]:
+def analytic_feedback(
+    parameter_list: List[float], max_mRNA_copy_number: int
+) -> List[float]:
     """Analytic solution to the feedback model.
 
     Solution originally published in Grima et al, JCP 137, 035104 (2012)

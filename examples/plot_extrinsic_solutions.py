@@ -2,10 +2,11 @@
 Compare evaluation of compound distributions
 """
 
-import sys
 import os
+import sys
 
 import matplotlib.pyplot as plt
+
 plt.style.use("seaborn-whitegrid")
 import scipy.stats as st
 
@@ -14,7 +15,6 @@ sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../source"))
 )
 # Load our modules
-import analytic as an
 import recurrence as rec
 import extrinsic as ext
 
@@ -26,8 +26,15 @@ pStd = 10.0
 dNB = st.nbinom((pVec[3] / pStd) ** 2, 1 - pStd ** 2 / (pVec[3] + pStd ** 2))
 print("Calculating compound two-state")
 P = [dNB.pmf(n) for n in range(N)]
-Q = ext.solve_compound_rec(rec.recurrence_step_two_switch, pVec, pStd, N, 400, compounding_distribution="gamma",
-                           decimal_precision=60)
+Q = ext.solve_compound_rec(
+    rec.recurrence_step_two_switch,
+    pVec,
+    pStd,
+    N,
+    400,
+    compounding_distribution="gamma",
+    decimal_precision=60,
+)
 fig = plt.figure()
 fig.suptitle("Compound leaky Telegraph model")
 plt.plot(range(N), P, label="Analytic solution")
@@ -43,8 +50,16 @@ kstd = 10.0
 N = 100
 print("Calculating compound three-state")
 P = rec.recurrence_three_switch(prms, N, M=300)
-Q = ext.solve_compound_rec(rec.recurrence_step_three_switch, prms, kstd, N, recursion_length=391, index_compound_parameter=8, compounding_distribution="lognormal",
-                           decimal_precision=73)
+Q = ext.solve_compound_rec(
+    rec.recurrence_step_three_switch,
+    prms,
+    kstd,
+    N,
+    recursion_length=391,
+    index_compound_parameter=8,
+    compounding_distribution="lognormal",
+    decimal_precision=73,
+)
 
 plt.clf()
 fig, ax = plt.subplots()
