@@ -11,7 +11,7 @@ from typing import Callable, List
 import numpy as np
 import scipy.stats as st
 
-from recurrence import invgenfunc
+from source.recurrence import invgenfunc
 
 
 def solve_compound_rec(
