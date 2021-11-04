@@ -12,9 +12,9 @@ conda activate ./gene-models
 conda install --file requirements.txt
 ```
 
-The installation can then be tested by running one of the example scripts:
+The installation can then be tested by running one of the pre-defined examples by running:
 ```bash
-python examples/plot_recurrence_solutions.py
+python main.py --method='analytic' --model='leaky'
 ```
 
 ## Examples
