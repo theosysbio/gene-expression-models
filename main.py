@@ -1,3 +1,33 @@
+"""
+Plot steady-state solutions for certain example systems with pre-defined parameters using analytic and recurrence
+method, as well as models with extrinsic as described in:
+
+L. Ham, D. Schnoerr, R. D. Brackston & M. P. H. Stumpf, Exactly solvable models of stochastic gene expression, J. Chem. Phys. 152, 144106 (2020).
+
+The following models are available for the different methods:
+
+- analytic method ('analytic'):
+  * leaky Telegraph model ('leaky')
+  * 2^2 model ('twotwo')
+  * 2^3 model ('twothree')
+- recurrence method ('recurrence'):
+    * leaky Telegraph model ('leaky')
+    * three switch model ('three_switch')
+    * feedback model ('feedback')
+- models with extrinsic noise ('extrinsic'):
+    * leaky Telegraph model ('leaky')
+    * three switch model ('three_switch')
+    * 2^2 model ('twotwo')
+
+The string in parentheses can be used to call one of the methods to solve and plot one of the available models from
+the command line (as an example the analytic method gets called here for the leaky Telegraph model):
+
+>> python main.py --method='analytic' --model='leaky'
+
+"""
+
+
+
 import click
 
 import examples.plot_analytic_solutions as plot_analytic
