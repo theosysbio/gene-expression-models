@@ -1,11 +1,12 @@
 certifi
 cycler
 kiwisolver
-matplotlib
-mpmath
-numpy
+matplotlib~=3.4.3
+mpmath~=1.2.1
+numpy~=1.21.2
 pyparsing
 python-dateutil
-scipy
+scipy~=1.7.1
 six
 tornado
+click~=8.0.1
