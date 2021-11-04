@@ -44,15 +44,16 @@ python main.py --method='analytic' --model='leaky'
 ```
 
 ## Common usage
-Typical usage would be to generate the steady state probability distribution for a given gene expression model. In this case the distribution *p*(*n*) is evaluated for all copy numbers *n*=0:*N*-1, and returned as a list of length *N*. For example:
+For a more refined analysis the modules in source/ can be used. Typical usage would be to generate the steady-state probability distribution for a given gene expression model. In this case the distribution *p*(*n*) is evaluated for all copy numbers *n*=0:*N*-1, and returned as a list of length *N*. For example, the following code computes and plots the analytic steady-state solution of the two-state (leaky Telegraph) model for *N=100*:
 ```python
 import source.analytic as an
 import matplotlib.pyplot as plt
 
-prms = [0.1,0.1, 65.,15.]
+prms = [0.1, 0.1, 65., 15.]
 N = 100
 P = an.analytic_twostate(prms,N)
 plt.plot(range(N), P)
+plt.show()
 ```
 
 Alternatively, The recurrence relation method enables the evaluation of the distribution at a single copy number *n*. This can be useful for example in parameter inference where a likelihood function is required for a finite number of samples. For example:
