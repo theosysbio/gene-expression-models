@@ -47,7 +47,7 @@ def plot_three_state_extrinsic():
     # [v12, v13, v21, v23, v31, v32, k1, k2 ,k3]
     kstd = 10.0
     N = 100
-    print("Solving compound three-state model using recurrence method")
+    print("Solving compound three-switch model using recurrence method")
     P = rec.recurrence_three_switch(prms, N, M=300)
     Q = ext.solve_compound_rec(
         rec.recurrence_step_three_switch,
