@@ -53,4 +53,4 @@ for s in samps: # Evaluate the log-likelihood
 ## Related literature
 The analytic solutions and recurrence method implemented here are described in the paper:
 
-[1] L. Ham, D. Schnoerr, R. D. Brackston & M. P. H. Stumpf, Exactly solvable models of stochastic gene expression. *bioRxiv* [2020.01.05.895359](https://doi.org/10.1101/2020.01.05.895359).
+[1] L. Ham, D. Schnoerr, R. D. Brackston & M. P. H. Stumpf, [Exactly solvable models of stochastic gene expression](https://doi.org/10.1063/1.5143540), J. Chem. Phys. 152, 144106 (2020).
