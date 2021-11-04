@@ -5,19 +5,19 @@ import examples.plot_extrinsic_solutions as plot_extrinsic
 import examples.plot_recurrence_solutions as plot_recurrence
 
 lookup_dict = {
-    "a": {
+    "analytic": {
         "leaky": plot_analytic.plot_leaky_telegraph,
         "twotwo": plot_analytic.plot_twotwo_multistate,
         "twothree": plot_analytic.plot_twothree_multistate,
     },
-    "r": {
+    "recurrence": {
         "leaky": plot_recurrence.plot_leaky_telegraph_recurrence,
         "three_switch": plot_recurrence.plot_three_switch_recurrence,
         "feedback": plot_recurrence.plot_feedback_model_recurrence,
     },
-    "e": {
+    "extrinsic": {
         "leaky": plot_extrinsic.plot_leaky_telegraph_extrinsic,
-        "three_state": plot_extrinsic.plot_three_state_extrinsic,
+        "three_switch": plot_extrinsic.plot_three_switch_extrinsic,
         "twotwo": plot_extrinsic.plot_twotwo_multistate_extrinsic,
     },
 }
