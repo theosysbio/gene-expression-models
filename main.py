@@ -26,8 +26,6 @@ the command line (as an example the analytic method gets called here for the lea
 
 """
 
-
-
 import click
 
 import examples.plot_analytic_solutions as plot_analytic
