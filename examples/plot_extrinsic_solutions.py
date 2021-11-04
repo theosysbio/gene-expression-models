@@ -42,7 +42,7 @@ def plot_leaky_telegraph_extrinsic():
 
 
 # Three state model with extrinsic noise on K3 as features in Figure 9 (b)
-def plot_three_state_extrinsic():
+def plot_three_switch_extrinsic():
     prms = [0.1, 0.2, 0.1, 0.2, 0.1, 0.1, 5.0, 20.0, 40.0]
     # [v12, v13, v21, v23, v31, v32, k1, k2 ,k3]
     kstd = 10.0
