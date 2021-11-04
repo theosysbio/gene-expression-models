@@ -18,16 +18,35 @@ python examples/plot_recurrence_solutions.py
 ```
 
 ## Examples
-The folder `examples/` contains the following example scripts which can be run using the python interpreter:
-- `plot_analytic_solutions.py`: computes and plots the analytic solution of several models.
-- `plot_recurrence_solutions.py`: approximate steady-state solutions using the recurrence method and compare finite finite-state projection algorithm.
-- `plot_extrinsic_solutions.py`: solutions for gene models with extrinsic noise on parameters using the analytic solution method and the recurrence method from [1].
+The folder `examples/` contains the following modules that implement functions that compute steady-state distributions of certain example systems for fixed parameters:
+- `plot_analytic_solutions.py`: functions for computing and plotting the analytic solution of several models.
+- `plot_recurrence_solutions.py`: functions for computing approximate steady-state solutions using the recurrence method and compare finite finite-state projection algorithm.
+- `plot_extrinsic_solutions.py`: functions for computing solutions for gene models with extrinsic noise on parameters using the analytic solution method and the recurrence method from [1].
 
+The following models are available for the different methods:
+
+- analytic method ('analytic'): 
+  * leaky Telegraph model ('leaky')
+  * 2^2 model ('twotwo')
+  * 2^3 model ('twothree')
+- recurrence method ('recurrence'):
+    * leaky Telegraph model ('leaky')
+    * three switch model ('three_switch')
+    * feedback model ('feedback')
+- models with extrinsic noise ('extrinsic'):
+    * leaky Telegraph model ('leaky')
+    * three switch model ('three_switch')
+    * 2^2 model ('twotwo')
+
+The string in parentheses can be used to call one of the methods to solve and plot one of the available models from the command line (as an example the analytic method gets called here for the leaky Telegraph model):
+```bash
+python main.py --method='analytic' --model='leaky'
+```
 
 ## Common usage
 Typical usage would be to generate the steady state probability distribution for a given gene expression model. In this case the distribution *p*(*n*) is evaluated for all copy numbers *n*=0:*N*-1, and returned as a list of length *N*. For example:
 ```python
-import analytic as an
+import source.analytic as an
 import matplotlib.pyplot as plt
 
 prms = [0.1,0.1, 65.,15.]
@@ -38,13 +57,13 @@ plt.plot(range(N), P)
 
 Alternatively, The recurrence relation method enables the evaluation of the distribution at a single copy number *n*. This can be useful for example in parameter inference where a likelihood function is required for a finite number of samples. For example:
 ```python
-import recurrence as rec
+import source.recurrence as rec
 import math
 
 samps = [2, 10, 4, 54, 12, 0, 3, 20]
 prms = [0.1,0.1, 65.,15.]
 M = 300 # Number of terms evaluated by the recursion relation.
-G = recurrence_step_two_switch(prms, M)
+G = rec.recurrence_step_two_switch(prms, M)
 L = 0.0
 for s in samps: # Evaluate the log-likelihood
     L += math.log(rec.invgenfunc(G, s))
